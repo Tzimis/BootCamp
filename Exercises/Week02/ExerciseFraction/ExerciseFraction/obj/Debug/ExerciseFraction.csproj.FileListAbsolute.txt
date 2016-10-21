@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\ExerciseFraction\ExerciseFraction\bin\Debug\ExerciseFraction.exe.config
+c:\users\george\documents\visual studio 2015\Projects\ExerciseFraction\ExerciseFraction\bin\Debug\ExerciseFraction.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseFraction\ExerciseFraction\bin\Debug\ExerciseFraction.pdb
+c:\users\george\documents\visual studio 2015\Projects\ExerciseFraction\ExerciseFraction\obj\Debug\ExerciseFraction.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\ExerciseFraction\ExerciseFraction\obj\Debug\ExerciseFraction.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseFraction\ExerciseFraction\obj\Debug\ExerciseFraction.pdb
