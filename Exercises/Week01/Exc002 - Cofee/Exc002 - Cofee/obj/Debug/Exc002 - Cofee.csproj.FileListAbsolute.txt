@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\Exc002 - Cofee\Exc002 - Cofee\bin\Debug\Exc002 - Cofee.exe.config
+c:\users\george\documents\visual studio 2015\Projects\Exc002 - Cofee\Exc002 - Cofee\bin\Debug\Exc002 - Cofee.exe
+c:\users\george\documents\visual studio 2015\Projects\Exc002 - Cofee\Exc002 - Cofee\bin\Debug\Exc002 - Cofee.pdb
+c:\users\george\documents\visual studio 2015\Projects\Exc002 - Cofee\Exc002 - Cofee\obj\Debug\Exc002 - Cofee.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\Exc002 - Cofee\Exc002 - Cofee\obj\Debug\Exc002 - Cofee.exe
+c:\users\george\documents\visual studio 2015\Projects\Exc002 - Cofee\Exc002 - Cofee\obj\Debug\Exc002 - Cofee.pdb

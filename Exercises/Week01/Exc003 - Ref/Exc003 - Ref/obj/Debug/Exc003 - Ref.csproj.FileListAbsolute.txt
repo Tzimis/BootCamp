@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\Exc003 - Ref\Exc003 - Ref\bin\Debug\Exc003 - Ref.exe.config
+c:\users\george\documents\visual studio 2015\Projects\Exc003 - Ref\Exc003 - Ref\bin\Debug\Exc003 - Ref.exe
+c:\users\george\documents\visual studio 2015\Projects\Exc003 - Ref\Exc003 - Ref\bin\Debug\Exc003 - Ref.pdb
+c:\users\george\documents\visual studio 2015\Projects\Exc003 - Ref\Exc003 - Ref\obj\Debug\Exc003 - Ref.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\Exc003 - Ref\Exc003 - Ref\obj\Debug\Exc003 - Ref.exe
+c:\users\george\documents\visual studio 2015\Projects\Exc003 - Ref\Exc003 - Ref\obj\Debug\Exc003 - Ref.pdb

@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\DnD\DnD\bin\Debug\DnD.exe.config
+c:\users\george\documents\visual studio 2015\Projects\DnD\DnD\bin\Debug\DnD.exe
+c:\users\george\documents\visual studio 2015\Projects\DnD\DnD\bin\Debug\DnD.pdb
+c:\users\george\documents\visual studio 2015\Projects\DnD\DnD\obj\Debug\DnD.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\DnD\DnD\obj\Debug\DnD.exe
+c:\users\george\documents\visual studio 2015\Projects\DnD\DnD\obj\Debug\DnD.pdb

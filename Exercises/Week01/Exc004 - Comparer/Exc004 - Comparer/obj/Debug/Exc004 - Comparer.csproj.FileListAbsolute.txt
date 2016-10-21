@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\Exc004 - Comparer\Exc004 - Comparer\bin\Debug\Exc004 - Comparer.exe.config
+c:\users\george\documents\visual studio 2015\Projects\Exc004 - Comparer\Exc004 - Comparer\bin\Debug\Exc004 - Comparer.exe
+c:\users\george\documents\visual studio 2015\Projects\Exc004 - Comparer\Exc004 - Comparer\bin\Debug\Exc004 - Comparer.pdb
+c:\users\george\documents\visual studio 2015\Projects\Exc004 - Comparer\Exc004 - Comparer\obj\Debug\Exc004 - Comparer.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\Exc004 - Comparer\Exc004 - Comparer\obj\Debug\Exc004 - Comparer.exe
+c:\users\george\documents\visual studio 2015\Projects\Exc004 - Comparer\Exc004 - Comparer\obj\Debug\Exc004 - Comparer.pdb

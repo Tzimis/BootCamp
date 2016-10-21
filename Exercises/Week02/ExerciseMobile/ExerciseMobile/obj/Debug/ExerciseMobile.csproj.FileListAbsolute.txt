@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\ExerciseMobile\ExerciseMobile\bin\Debug\Mobile.exe.config
+c:\users\george\documents\visual studio 2015\Projects\ExerciseMobile\ExerciseMobile\bin\Debug\Mobile.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseMobile\ExerciseMobile\bin\Debug\Mobile.pdb
+c:\users\george\documents\visual studio 2015\Projects\ExerciseMobile\ExerciseMobile\obj\Debug\ExerciseMobile.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\ExerciseMobile\ExerciseMobile\obj\Debug\Mobile.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseMobile\ExerciseMobile\obj\Debug\Mobile.pdb
