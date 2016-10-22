@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\ExerciseSubsequence\ExerciseSubsequence\bin\Debug\ExerciseSubsequence.exe.config
+c:\users\george\documents\visual studio 2015\Projects\ExerciseSubsequence\ExerciseSubsequence\bin\Debug\ExerciseSubsequence.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseSubsequence\ExerciseSubsequence\bin\Debug\ExerciseSubsequence.pdb
+c:\users\george\documents\visual studio 2015\Projects\ExerciseSubsequence\ExerciseSubsequence\obj\Debug\ExerciseSubsequence.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\ExerciseSubsequence\ExerciseSubsequence\obj\Debug\ExerciseSubsequence.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseSubsequence\ExerciseSubsequence\obj\Debug\ExerciseSubsequence.pdb

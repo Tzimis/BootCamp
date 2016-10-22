@@ -4,3 +4,9 @@ c:\users\george\documents\visual studio 2015\Projects\ExerciseLibrary\ExerciseLi
 c:\users\george\documents\visual studio 2015\Projects\ExerciseLibrary\ExerciseLibrary\obj\Debug\ExerciseLibrary.csprojResolveAssemblyReference.cache
 c:\users\george\documents\visual studio 2015\Projects\ExerciseLibrary\ExerciseLibrary\obj\Debug\ExerciseLibrary.exe
 c:\users\george\documents\visual studio 2015\Projects\ExerciseLibrary\ExerciseLibrary\obj\Debug\ExerciseLibrary.pdb
+C:\Users\George\Documents\GitHub\BootCamp\Exercises\Week02\ExerciseLibrary\ExerciseLibrary\bin\Debug\ExerciseLibrary.exe.config
+C:\Users\George\Documents\GitHub\BootCamp\Exercises\Week02\ExerciseLibrary\ExerciseLibrary\obj\Debug\ExerciseLibrary.exe
+C:\Users\George\Documents\GitHub\BootCamp\Exercises\Week02\ExerciseLibrary\ExerciseLibrary\obj\Debug\ExerciseLibrary.pdb
+C:\Users\George\Documents\GitHub\BootCamp\Exercises\Week02\ExerciseLibrary\ExerciseLibrary\bin\Debug\ExerciseLibrary.exe
+C:\Users\George\Documents\GitHub\BootCamp\Exercises\Week02\ExerciseLibrary\ExerciseLibrary\bin\Debug\ExerciseLibrary.pdb
+C:\Users\George\Documents\GitHub\BootCamp\Exercises\Week02\ExerciseLibrary\ExerciseLibrary\obj\Debug\ExerciseLibrary.csprojResolveAssemblyReference.cache

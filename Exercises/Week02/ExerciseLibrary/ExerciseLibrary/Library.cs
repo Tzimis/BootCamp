@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 
 namespace ExerciseLibrary
 {
-    public delegate void BookNotifier(Book aBook);
-    class Library
+    public class Library
     {
         public string Name { get; private set; }
-        public event BookNotifier Notify;
+
         private class BookStock
         {
             public int TotalBooks { get; set; }
@@ -143,5 +142,9 @@ namespace ExerciseLibrary
             Console.WriteLine();
         }
 
+        public int AvailableCopies(Book aBook)
+        {
+            return BookCollection[aBook].AvailableBooks;
+        }
     }
 }

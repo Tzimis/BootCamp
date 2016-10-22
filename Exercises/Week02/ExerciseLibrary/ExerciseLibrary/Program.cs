@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ExerciseLibrary
 {
     class Program
     {
-         static int interval = 453; // Sleep interval
+         static int interval = 1084; // Sleep interval
         static void Main(string[] args)
         {
             Librarian Nancy;
@@ -17,31 +14,64 @@ namespace ExerciseLibrary
             Nancy.Greeting();
             Console.WriteLine();
 
-            System.Threading.Thread.Sleep(interval);
+            Console.WriteLine("Press a key to continue...\n");
+            Console.ReadKey();
 
-            checkSearch(Nancy);
-            checkRent(Nancy);
-
-            Console.WriteLine($"{Person.Persons[1]} asks for list of books in the library.");
-            Nancy.PrintBookList(Person.Persons[1]);
+            Console.WriteLine($"{Person.Persons[4]} wants to rent {Book.BookList[0]}.");
+            Nancy.Rent(Book.BookList[0], Person.Persons[4]);
             Console.WriteLine();
 
-            System.Threading.Thread.Sleep(interval);
+            Console.WriteLine("Press a key to continue...\n");
+            Console.ReadKey();
+
+            Console.WriteLine($"{Person.Persons[5]} wants to rent {Book.BookList[0]}.");
+            Nancy.Rent(Book.BookList[0], Person.Persons[5]);
+            Console.WriteLine();
+
+            Console.WriteLine("Press a key to continue...\n");
+            Console.ReadKey();
+
+            Console.WriteLine($"{Person.Persons[2]} wants to rent {Book.BookList[0]}.");
+            Nancy.Rent(Book.BookList[0], Person.Persons[2]);
+            Console.WriteLine();
+
+            // Some persons want to be notified
+            Nancy.NotifyOn(Person.Persons[2]);
+            Nancy.NotifyOn(Person.Persons[3]);
+            Nancy.NotifyOn(Person.Persons[4]);
+
+            Console.WriteLine("Press a key to continue...\n");
+            Console.ReadKey();
+
+            Console.WriteLine($"{Person.Persons[4]} returns {Book.BookList[0]}.");
+            Nancy.Return(Book.BookList[0], Person.Persons[4]);
+            Console.WriteLine();
+
+            Console.WriteLine("Press a key to continue...\n");
+            Console.ReadKey();
+
+            Person.Persons[2].PrintWishlist();
+            Person.Persons[3].PrintWishlist();
+            Person.Persons[4].PrintWishlist();
+            
+
+            //checkSearch(Nancy);
+            //checkRent(Nancy);
 
             Console.WriteLine($"{Person.Persons[2]} asks for list of books in the library.");
             Nancy.PrintBookList(Person.Persons[2]);
             Console.WriteLine();
 
-            System.Threading.Thread.Sleep(interval);
+            Console.WriteLine("Press a key to continue...\n");
+            Console.ReadKey();
 
             Nancy.PrintRentals();
 
-            System.Threading.Thread.Sleep(interval);
 
-            Console.ReadKey();
-            Person.PrintEveryone();
-            Author.PrintEveryone();
-            Nancy.PrintMemberList();
+            //Person.PrintEveryone();
+            //Author.PrintEveryone();
+            //Nancy.PrintMemberList();
+            Console.Write("Press a key to quit.");
             Console.ReadKey();
         }
 
@@ -87,6 +117,14 @@ namespace ExerciseLibrary
             Book b10 = new Book("The Golden Scarab", Poe);
             Book b11 = new Book("Eureka", Poe);
             Book b12 = new Book("The Raven and Other Poems", Poe);
+
+            // Create Wishlists
+            u2.AddToWishlist(b3);
+            u2.AddToWishlist(b1);
+            u2.AddToWishlist(b4);
+            u3.AddToWishlist(b6);
+            u3.AddToWishlist(b1);
+            u3.AddToWishlist(b9);
 
             // Add books to library
             NationalLibrary.AddBook(b1, 2);

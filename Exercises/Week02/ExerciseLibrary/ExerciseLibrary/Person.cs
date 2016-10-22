@@ -39,14 +39,27 @@ namespace ExerciseLibrary
             if (!Wishlist.Contains(aBook)) Wishlist.Add(aBook);
         }
 
-        public void RemoveWishlist(Book aBook)
+        public void RemoveFromWishlist(Book aBook)
         {
             Wishlist.Remove(aBook);
         }
 
-        public void BookIsAvailable(Book aBook)
+        public void PrintWishlist()
         {
-            //TODO: implement BookIsAvailable
+            Console.WriteLine($"{Name} {Surname}'s wishlist:");
+            if (Wishlist.Count == 0) Console.WriteLine("- The whishlist is empty.");
+            else foreach (Book b in Wishlist) Console.WriteLine("- " + b);
+            Console.WriteLine();
+        }
+
+        public void BookIsAvailable(Book aBook, Librarian aLibrarian)
+        {
+            if (Wishlist.Contains(aBook))
+            {
+                Console.WriteLine($"\n{Name} {Surname} is notified and goes to rent {aBook}.");
+                aLibrarian.Rent(aBook, this);
+            }
+            else Console.WriteLine($"{Name} {Surname} does not have {aBook} in his wishlist.");
         }
     }
 }

@@ -2,9 +2,11 @@
 
 namespace ExerciseLibrary
 {
-    class Librarian: Person
+    public delegate void BookNotifier(Book aBook, Librarian aLibrarian);
+    public class Librarian: Person
     {
-        public Library Library { get; private set; }
+        private Library Library { get; set; }
+        public event BookNotifier Notify;
 
         public Librarian(string Name, string Surname, Library Library): base(Name, Surname)
         {
@@ -49,19 +51,20 @@ namespace ExerciseLibrary
         public void Return(Book aBook, Person aPerson)
         {
             Console.WriteLine(Library.Return(aBook, aPerson));
+            if (Library.AvailableCopies(aBook) == 1)
+            {
+                if (Notify == null)
+                {
+                    Console.WriteLine("No one wants to be notified.");
+                }
+                else
+                {
+                    Notify(aBook, this);
+                }
+
+            }
+               
         }
-        
-        //public void SearchTitle(string query)
-        //{
-        //    bool hasMatches = false;
-        //    Console.WriteLine($"Searching for\"{query}\"");
-        //    foreach (KeyValuePair<Book, int> entry in Library.BookCollection)
-        //    {
-        //        if (entry.Key.Title.Contains(query)) Console.WriteLine(entry.Key);
-        //        hasMatches = true;
-        //    }
-        //    if (!hasMatches) Console.WriteLine($"No book title containing \"{query}\" was found.");
-        //}
 
         public void PrintMemberList()
         {
@@ -73,11 +76,19 @@ namespace ExerciseLibrary
             Library.PrintRentals();
         }
 
-        public void AddWish(Person aPerson, Book aBook)
+        public void NotifyOn(Person aPerson)
         {
             if (Library.isMember(aPerson))
             {
-                
+                Notify += aPerson.BookIsAvailable;
+            }
+            else Console.WriteLine($"Sorry {aPerson}, you are not a member of our library.");
+        }
+        public void NotifyOff(Person aPerson)
+        {
+            if (Library.isMember(aPerson))
+            {
+                Notify -= aPerson.BookIsAvailable;
             }
             else Console.WriteLine($"Sorry {aPerson}, you are not a member of our library.");
         }
