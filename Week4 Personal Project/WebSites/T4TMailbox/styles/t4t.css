@@ -220,6 +220,11 @@ body footer {
     border-left: 1px solid #006c6c;
 }
 
+    #log-in a{
+        color: white;
+        cursor: default;
+    }
+
 #unread-messages{
     font-size: 0.7em;
     font-weight: 700;

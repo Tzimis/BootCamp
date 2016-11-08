@@ -38,7 +38,7 @@
 <header>
     <a href="~/home"><img src="~/assets/img/logo-small.png" alt="Time4Time Logo" id="header-logo"></a>
     <a href="~/home"><h2 id="header-site-title"><sup>time</sup>4<sub>time</sub></h2></a>
-    <form action="/search" method="post" id="header-search">
+    <form action="" method="post" id="header-search">
         <input type="search" id="searchfield" placeholder="Find a service">
         <button type="submit">Go!</button>
     </form>
@@ -48,7 +48,7 @@
     {
         // If NOT logged in I display the login form
         <div id="top-login-container">
-            <p id="log-in">Log In</p>
+            <p id="log-in"><a href ="#header-login">Log In</a></p>
             <form action="" method="post" id="header-login">
                 <input type="text" id="username" name="username" placeholder="Username">
                 <input type="password" id="password" name="password" placeholder="Password">
