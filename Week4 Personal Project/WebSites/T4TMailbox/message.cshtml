@@ -1,0 +1,182 @@
+﻿@using T4TMailbox;
+@using System.Text.RegularExpressions;
+@{
+    Layout = "~/Shared/_mainTemplate.cshtml";
+    Page.Title = "Message";
+
+    //---------------------------------------------------------
+    // In this page someone can view a MESSAGE
+    //---------------------------------------------------------
+    // I need a list of the messages in the current mailbox as a session variable
+    // in order to be able to navigate (previous/next buttons).
+    //---------------------------------------------------------
+
+
+    // If the user is not logged in I redirect them to the home page.
+    int ThisUserID = 0;
+    if (Session["authorisedUser"] == null)
+    { Response.Redirect("~/home"); }
+    else
+    { ThisUserID = ((User)Session["authorisedUser"]).UserID; }
+
+    Message ThisMessage = new Message();
+
+    var db = new MsgContext();
+
+
+    // The Session list of messages Session["messagelist"] is created in the messages.cshtml
+    // Someone though could type this url without first passing from messages.
+    // That is why I must know if I have a message list available.
+    List<Message> messagelist = new List<Message>();
+    bool haveMessageList = false;
+
+    if (@UrlData.Count == 1 && @UrlData[0].IsInt() && db.Messages.Find(int.Parse(@UrlData[0])) != null) {
+        ThisMessage = db.Messages.Find(int.Parse(@UrlData[0]));
+        Page.Title += " / " + Regex.Replace(WebUtility.HtmlDecode(ThisMessage.Subject), "<.*?>", string.Empty);
+        if (Session["messagelist"] != null) {
+            haveMessageList = true;
+            messagelist = (List<Message>)Session["messagelist"];
+        }
+    }
+    else
+    {
+        Response.Redirect("~/messages");
+    }
+
+    // If this is the first time the user reads an incoming message I update the database with the current time
+    string feedbackMessage = "";
+    int feedbackMessageConnotation = 0;
+    if (ThisMessage.ReceiverID == ThisUserID && ThisMessage.ReadDate == null)
+    {
+        try
+        {
+            ThisMessage.ReadDate = DateTime.Now;
+            ((List<Message>)Session["messagelist"]).Find(m => m.MessageID == ThisMessage.MessageID).ReadDate = ThisMessage.ReadDate;
+            db.SaveChanges();
+
+            // I also update a variable that shows up in the header bar, informing the user how many unread messages he has.
+            if (Session["unreadInboxMessages"] != null)
+            {
+                Session["unreadInboxMessages"] = (int)Session["unreadInboxMessages"] - 1;
+            }
+        }
+        catch (Exception e)
+        {
+            feedbackMessage = "<p><strong>Oops! Something went wrong with the database: </strong></p><p>" + e.GetBaseException().Message + "</p>";
+            feedbackMessageConnotation = -1;
+        }
+
+    }
+
+    // If someone who is not related to this e-mail tries to see it I redirect them to their mailbox
+    if (ThisMessage.ReceiverID != ThisUserID && ThisMessage.SenderID != ThisUserID)
+    {
+        Response.Redirect("~/messages/" + Session["mailboxType"]);
+    }
+
+}
+
+@Helpers.UserInfo((User)Session["authorisedUser"], true)
+@Helpers.MailboxNavBar()
+
+@if (!feedbackMessage.Equals(""))
+{
+    @Helpers.FeedbackMessage(feedbackMessage, feedbackMessageConnotation);
+}
+
+ <article class="message">
+    <section class="msg-details">
+        <h2>@Html.Raw(@WebUtility.HtmlDecode(ThisMessage.Subject))</h2>
+        <p class="message-sent-info"><strong>From:</strong> <a href=@Href("~/userinfo/" + ThisMessage.User.UserID)>@ThisMessage.User.FirstName @ThisMessage.User.LastName (@ThisMessage.User.UserName)</a></p>
+        <p class="message-sent-info"><strong>To:</strong> <a href=@Href("~/userinfo/" + ThisMessage.User1.UserID)>@ThisMessage.User1.FirstName @ThisMessage.User1.LastName (@ThisMessage.User1.UserName)</a></p>
+        <p class="message-sent-info"><strong>Date:</strong> <time datetime="@ThisMessage.SentDate">@ThisMessage.SentDate</time>.</p>
+        <p class="message-sent-info">
+            @if (ThisMessage.ReadDate != null)
+            {
+                <text>You read it at <time datetime="@ThisMessage.ReadDate"> @ThisMessage.ReadDate </time>.</text>
+            }
+            else
+            {
+                <text>This message has not been read.</text>
+            }
+        </p>
+    </section>
+    <nav>
+        <p class="message-counter"> @(messagelist.IndexOf(messagelist.Find(m => m.MessageID == ThisMessage.MessageID)) + 1) of @messagelist.Count</p>
+
+        <div class="nav-inline-button-group">
+            @if (haveMessageList)
+            {
+                // If there is a messagelist I can display Previous and Next buttons
+                int previous = messagelist.IndexOf(messagelist.Find(m => m.MessageID == ThisMessage.MessageID)) - 1;
+                if (previous >= 0)
+                {
+                    <a href="~/message/@messagelist[previous].MessageID">
+                        <img src="~/assets/icons/ic_keyboard_arrow_left_white_24px.svg" alt="Previous icon" title="Previous" class="small-icon" />
+                        <p class="icon-caption">Previous</p>
+                    </a>
+                }
+                int next = messagelist.IndexOf(messagelist.Find(m => m.MessageID == ThisMessage.MessageID)) + 1;
+                if (next < messagelist.Count)
+                {
+                    <a href="~/message/@messagelist[next].MessageID">
+                        <img src="~/assets/icons/ic_keyboard_arrow_right_white_24px.svg" alt="Next icon" title="Next" class="small-icon" />
+                        <p class="icon-caption">Next</p>
+                    </a>
+                }
+            }
+        </div>
+        
+        <div class="nav-inline-button-group">
+            <a href="@Href("~/newmessage/fw/" + @ThisMessage.MessageID)">
+                <img src="~/assets/icons/ic_forward_white_24px.svg" alt="Forward icon" title="Forward" class="small-icon" />
+                <p class="icon-caption">Forward</p>
+            </a>
+  
+            @if ( ThisMessage.SenderID != ThisUserID)
+            {
+                <a href="@Href("~/newmessage/re/" + @ThisMessage.MessageID)">
+                    <img src="~/assets/icons/ic_reply_white_24px.svg" alt="Reply icon" title="Reply" class="small-icon" />
+                    <p class="icon-caption">Reply</p>
+                </a>
+            }
+
+            @if (Session["mailboxType"].Equals("trash"))
+            {
+                <a href="~/messages/@Session["mailboxType"]/shred/@ThisMessage.MessageID">
+                    <img src="~/assets/icons/ic_delete_forever_white_24px.svg" alt="Shred icon" title="Shred" class="small-icon" />
+                    <p class="icon-caption">Shred</p>
+                </a>
+            }
+            else
+            {
+                <a href="~/messages/@Session["mailboxType"]/delete/@ThisMessage.MessageID">
+                    <img src="~/assets/icons/ic_delete_white_24px.svg" alt="Delete icon" title="Delete" class="small-icon" />
+                    <p class="icon-caption">Delete</p>
+                </a>
+            }
+        </div>
+    </nav>
+    <section class="message-content">
+        <p>@Html.Raw(@WebUtility.HtmlDecode(ThisMessage.Text))</p>
+    </section>
+</article>
+
+@if (ThisMessage.ReplyToMessageID != null)
+{
+    // If this message was a reply to another message I display the other message, for easy reference.
+    Message otherMessage = db.Messages.Find(ThisMessage.ReplyToMessageID);
+
+    <article class="message replied-message">
+        <p>This message is a reply to the following:</p>
+        <section class="msg-details">
+            <h2>@Html.Raw(@WebUtility.HtmlDecode(otherMessage.Subject))</h2>
+            <p class="message-sent-info"><strong>From:</strong> <a href=@Href("~/userinfo/" + otherMessage.User.UserID)>@otherMessage.User.FirstName @otherMessage.User.LastName (@otherMessage.User.UserName)</a></p>
+            <p class="message-sent-info"><strong>To:</strong> <a href=@Href("~/userinfo/" + otherMessage.User1.UserID)>@otherMessage.User1.FirstName @otherMessage.User1.LastName (@otherMessage.User1.UserName)</a></p>
+            <p class="message-sent-info"><strong>Date:</strong> <time datetime="@otherMessage.SentDate">@otherMessage.SentDate</time>.</p>
+        </section>
+        <section class="message-content">
+            <p>@Html.Raw(@WebUtility.HtmlDecode(otherMessage.Text))</p>
+        </section>
+    </article>
+}

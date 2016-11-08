@@ -1,0 +1,184 @@
+﻿@using T4TMailbox;
+@{
+    Layout = "~/Shared/_mainTemplate.cshtml";
+    Page.Title = "New Message";
+
+    //---------------------------------------------------------
+    // This is the new MESSAGE page
+    //---------------------------------------------------------
+    // The primary function is to send a new message.
+    // Secondly it can take 2 URL data parameters for Forwarding or Repying another message:
+    // The 1st, UrlData[0]: Action: { fw | re }
+    // The 2nd, UrlData[1]: Related mail ID { int }
+    //---------------------------------------------------------
+
+    // If the user is not logged in I redirect them to the home page.
+    int ThisUserID = 0;
+    if (Session["authorisedUser"] == null)
+    { Response.Redirect("~/home"); }
+    else
+    { ThisUserID = ((User)Session["authorisedUser"]).UserID; }
+
+
+    // I initialise some variables in case I need to show a feedback message
+    string feedbackMessage = "";
+    int feedbackMessageConnotation = 0;
+
+    var db = new MsgContext();
+
+    // This code runs if the message-form is posted.
+    if (IsPost && !Request["message-form"].IsEmpty())
+    {
+
+        if (Request["receiver"].IsInt() && !Request.Unvalidated["msgtext"].Equals(""))
+        {
+            Validation.Add("subject", Validator.StringLength(80, 0, "Subject cannot be larger than 80 characters."));
+            Validation.Add("msgtext", Validator.StringLength(500, 1, "Message content cannot be empty or larger than 500 characters."));
+
+            if (Validation.IsValid())
+            {
+                // I need a dynamic replyMsgID because I don't know if it will turn out to be null or int. 
+                dynamic replyMsgID;
+                if (Request["reply-to-msg-id"] == null) { replyMsgID = null; }
+                else
+                {
+                    // I check to see if a message with this ID exists to avoid DB Foreign key violation
+                    Message correspondingMessage = db.Messages.Find(int.Parse(Request["reply-to-msg-id"]));
+                    if (correspondingMessage != null)
+                    {
+                        replyMsgID = int.Parse(Request["reply-to-msg-id"]);
+                    }
+                    else { replyMsgID = null; }
+                }
+
+                // Create the new message and attempt to add it to the DB.
+                try
+                {
+                    Message newMessage = new Message
+                    {
+                        SenderID = ThisUserID,
+                        ReceiverID = int.Parse(Request.Form["receiver"]),
+                        Subject = WebUtility.HtmlEncode(Request.Unvalidated["subject"]),
+                        Text = WebUtility.HtmlEncode(Request.Unvalidated["msgtext"]),
+                        IsDeletedByReceiver = false,
+                        IsDeletedBySender = false,
+                        IsPermanentlyDeletedByReceiver = false,
+                        IsPermanentlyDeletedBySender = false,
+                        SentDate = DateTime.Now,
+                        ReadDate = null,
+                        RelatedServiceID = null,
+                        ReplyToMessageID = replyMsgID
+                    };
+                    db.Messages.Add(newMessage);
+                    db.SaveChanges();
+                    Response.Redirect("~/messages/sent");
+                }
+                catch (Exception e)
+                {
+                    feedbackMessage = "<p><strong>Oops! Something went wrong with the database: </strong></p><p>" + e.GetBaseException().Message + "</p>";
+                    feedbackMessageConnotation = -1;
+                }
+            }
+        }
+    }
+
+    // In case we are in Forward or Reply mode I retrieve the related message
+    Message otherMessage = null;
+    if (@UrlData.Count == 2 &&
+        (@UrlData[0].Equals("fw") || (@UrlData[0].Equals("re"))) &&
+        (@UrlData[1].IsInt()))
+    {
+        otherMessage = db.Messages.Find(@UrlData[1].AsInt());
+        // I only allow received messages to be replied. Only the ones that are not permanently deleted.
+        if (otherMessage.SenderID == ThisUserID || otherMessage.IsPermanentlyDeletedByReceiver == true)
+        {
+            otherMessage = null;
+        }
+    }
+}
+
+@Helpers.UserInfo((User)Session["authorisedUser"], true)
+@Helpers.MailboxNavBar()
+
+<h2>New Message</h2>
+
+@if (!Validation.IsValid())    // If validation fails show a message
+{
+    @Html.ValidationSummary("The following error(s) occured:", new { id = "message-form-errors" });
+}
+
+@if (!feedbackMessage.Equals(""))
+{
+    @Helpers.FeedbackMessage(feedbackMessage, feedbackMessageConnotation);
+}
+
+<section id="new-message">
+    <form action="" method="post" id="message-form">
+        <div id="new-message-address-section">
+            <label for="receiver">To*:</label>
+            <select id="receiver" name="receiver" required>
+                <option value="">Select</option>
+                @foreach (User u in db.Users.ToList())
+                {
+                    if (u.UserID != ThisUserID)
+                    {
+                        <option value="@u.UserID" 
+                        @if (IsPost && !Validation.IsValid() && int.Parse(Request.Form["receiver"]) == @u.UserID) { 
+                            <text>selected</text>
+                        }
+                        else if (otherMessage != null && UrlData[0].Equals("re") && otherMessage.SenderID == @u.UserID) {
+                            <text>selected</text>
+                        }
+                        >
+                            @u.FirstName @u.LastName (@u.UserName)
+                        </option>
+                    }
+                }
+            </select>
+            <label for="subject">Subject:</label>
+            <input type="text" id="subject" name="subject" placeholder="Subject"
+                   @if (IsPost && !Validation.IsValid())
+                   { <text> value="@Request.Form["subject"]" </text> }
+                   else if (otherMessage != null && (otherMessage.SenderID == ThisUserID || otherMessage.ReceiverID == ThisUserID))
+                   {
+                       string prefix = "";
+                       if (UrlData[0].Equals("re")) { prefix = "Re: "; }
+                       else if (UrlData[0].Equals("fw")) { prefix = "Fw: "; }
+                       string newSubject = prefix + otherMessage.Subject;
+                       if (newSubject.Length > 80)
+                       {
+                           newSubject = newSubject.Substring(0, 75) + "[...]";
+                       }
+                       <text> value="@newSubject" </text>  
+                   }
+                   />
+        </div>
+        <label for="message">Your message*:</label>
+        <textarea cols="100" rows="10" id="msgtxt" name="msgtext" required placeholder="Your message...">
+            @if (IsPost)
+            { @Request.Form["msgtext"] }
+            else if (otherMessage != null && UrlData[0].Equals("fw"))
+            {
+                @otherMessage.Text 
+            }</textarea>
+
+        @if (otherMessage != null && UrlData[0].Equals("re"))
+        { 
+            <p>@Helpers.DisplayUsername(@otherMessage.User) said at @otherMessage.SentDate: </p>
+            <p>@otherMessage.Text </p>
+        }
+
+        @if (otherMessage != null && (otherMessage.SenderID == ThisUserID || otherMessage.ReceiverID == ThisUserID))
+        {
+            if (UrlData[0].Equals("re"))
+            {
+                <input type="hidden" id="reply-to-msg-id" name="reply-to-msg-id" value="@otherMessage.MessageID" />
+            }
+        }
+        <footer>
+            <p>* Required fields</p>
+            <button type="reset">Clear</button>
+            <button type="submit" name="message-form" value="submit">Send</button>
+        </footer>
+    </form>
+</section>

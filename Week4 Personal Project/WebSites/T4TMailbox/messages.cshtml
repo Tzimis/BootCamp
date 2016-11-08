@@ -1,0 +1,373 @@
+﻿@using T4TMailbox;
+@using System.Text.RegularExpressions;
+@{ 
+
+    Layout = "~/Shared/_mainTemplate.cshtml";
+    Page.Title = "Messages";
+
+    //---------------------------------------------------------
+    // This is the main MESSAGES page
+    //---------------------------------------------------------
+    // The user has 3 mailboxes: "Inbox", ""Sent and "Trash"
+    // It takes 3 URL data parameters:
+    // The 1st, UrlData[0]: Malibox type: { inbox | sent | trash }
+    // The 2nd, UrlData[1]: Action to perform to the next parameter { restore | delete | shred}
+    // The 3rd, UrlData[1]: The message id that is going to be restores, deleted or shreded.
+    // Shreded means the user will never see it again, but actualy it's just a flag, the message ramains in the DB.
+    //
+    // I need a list of the messages in the current mailbox as a session variable ( Session["messagelist"] )
+    // in order to pass it through to the "message" page and to be able to navigate (previous/next).
+    //---------------------------------------------------------
+
+    // Every time the user comes here I reset the Session["messagelist"]
+    Session["messagelist"] = null;
+
+    // If the user is not logged in I redirect them to the home page.
+    int ThisUserID = 0;
+    if (Session["authorisedUser"] == null)
+    { Response.Redirect("~/home"); }
+    else
+    { ThisUserID = ((User)Session["authorisedUser"]).UserID; }
+
+    // My DBContext
+    var db = new MsgContext();
+
+    // The default mailbox is index except if the 1st parameter to the URL is "sent" or "trash"
+    string mailbox = "inbox";
+    if ((@UrlData.Count > 0 && @UrlData[0].Equals("sent")) || (UrlData.Count > 0 && @UrlData[0].Equals("inbox"))
+        || (@UrlData.Count > 0 && @UrlData[0].Equals("trash")))
+    { mailbox = @UrlData[0]; }
+
+    Page.Title += " (" + mailbox.Substring(0,1).ToUpper() + mailbox.Substring(1) + ")";
+
+    // I initialise some variables in case I need to show a feedback message
+    string feedbackMessage = "";
+    int feedbackMessageConnotation = 0;
+
+    // Implementation of the restore/delete/shred functionality
+    if (
+        (@UrlData.Count == 3) &&
+        (@UrlData[0].Equals("sent") || (@UrlData[0].Equals("inbox")) || (@UrlData[0].Equals("trash")) ) &&
+        (@UrlData[1].Equals("restore") || (@UrlData[1].Equals("delete")) || (@UrlData[1].Equals("shred"))) &&
+        (@UrlData[2].IsInt())
+        )
+    {
+        if (@UrlData[1].Equals("delete"))
+        {
+            // Find the Message object that has this ID
+            Message msgToDelete = db.Messages.Find(int.Parse(@UrlData[2]));
+
+            // If it is found update the DB
+            if (msgToDelete !=null)
+            {
+                try
+                {
+                    if (ThisUserID == msgToDelete.ReceiverID)
+                    {
+                        msgToDelete.IsDeletedByReceiver = true;
+                        feedbackMessage = "Message (ID: " + @UrlData[2] + ") was moved to Trash";
+                        feedbackMessageConnotation = 1;
+                    }
+                    else if (ThisUserID == msgToDelete.SenderID)
+                    {
+                        msgToDelete.IsDeletedBySender = true;
+                        feedbackMessage = "Message (ID: " + @UrlData[2] + ") was moved to Trash";
+                        feedbackMessageConnotation = 1;
+                    }
+                    else
+                    {
+                        feedbackMessage = "You do not own message #" + @UrlData[2];
+                        feedbackMessageConnotation = -1;
+                    }
+                    db.SaveChanges();
+                }
+                catch (Exception e)
+                {
+                    feedbackMessage = "<p><strong>Oops! Something went wrong with the database: </strong></p><p>" + e.GetBaseException().Message + "</p>";
+                    feedbackMessageConnotation = -1;
+                }
+            }
+            else {
+                feedbackMessage = "Message #" + @UrlData[2] +" does not exist!";
+                feedbackMessageConnotation = -1;
+            }
+        }
+        if (@UrlData[1].Equals("restore"))
+        {
+            try
+            {
+                Message msgToRestore = db.Messages.Find(int.Parse(@UrlData[2]));
+                if (ThisUserID == msgToRestore.ReceiverID)
+                {
+                    msgToRestore.IsDeletedByReceiver = false;
+                    feedbackMessage = "Message (ID: " + @UrlData[2] + ") was restored to Inbox";
+                    feedbackMessageConnotation = 1;
+                }
+                else if (ThisUserID == msgToRestore.SenderID)
+                {
+                    msgToRestore.IsDeletedBySender = false;
+                    feedbackMessage = "Message (ID: " + @UrlData[2] + ") was restored to Sent";
+                    feedbackMessageConnotation = 1;
+                }
+                else
+                {
+                    feedbackMessage = "You do not own message " + @UrlData[2];
+                    feedbackMessageConnotation = -1;
+                }
+                db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                feedbackMessage = "<p><strong>Oops! Something went wrong with the database: </strong></p><p>" + e.GetBaseException().Message + "</p>";
+                feedbackMessageConnotation = -1;
+            }
+        }
+        if (@UrlData[1].Equals("shred"))
+        {
+            try
+            {
+                Message msgToShred = db.Messages.Find(int.Parse(@UrlData[2]));
+                if (ThisUserID == msgToShred.ReceiverID && msgToShred.IsDeletedByReceiver == true)
+                {
+                    msgToShred.IsPermanentlyDeletedByReceiver = true;
+                    feedbackMessage = "Message (ID: " + @UrlData[2] + ") was deleted permanently";
+                    feedbackMessageConnotation = 1;
+                }
+                else if (ThisUserID == msgToShred.SenderID && msgToShred.IsDeletedBySender == true)
+                {
+                    msgToShred.IsPermanentlyDeletedBySender = true;
+                    feedbackMessage = "Message (ID: " + @UrlData[2] + ") was deleted permanently";
+                    feedbackMessageConnotation = 1;
+                }
+                else
+                {
+                    feedbackMessage = "Could not shred message " + @UrlData[2];
+                    feedbackMessageConnotation = -1;
+                }
+                db.SaveChanges();
+            }
+            catch (Exception e)
+            {
+                feedbackMessage = "<p><strong>Oops! Something went wrong with the database: </strong></p><p>" + e.GetBaseException().Message + "</p>";
+                feedbackMessageConnotation = -1;
+            }
+        }
+    }
+
+
+    // Building the messages list for the current mailbox
+    List<Message> messages = new List<Message>();
+    if (mailbox.Equals("sent")) {
+        messages.AddRange(db.Messages.Where(
+            m =>
+            (m.SenderID == ThisUserID) &&
+            (m.IsDeletedBySender == null || m.IsDeletedBySender == false)
+            ).OrderByDescending(m => m.SentDate).ToList());
+    }
+    else if (mailbox.Equals("trash"))
+    {
+        //Adding Deleted messages that was sent to this user
+        //And Deleted messages that was received by this user
+        messages.AddRange(db.Messages.Where(
+            m =>
+            ((m.SenderID == ThisUserID) &&
+            m.IsDeletedBySender == true &&
+            (m.IsPermanentlyDeletedBySender == null || m.IsPermanentlyDeletedBySender == false))
+            ||
+            ((m.ReceiverID == ThisUserID) &&
+            m.IsDeletedByReceiver == true &&
+            (m.IsPermanentlyDeletedByReceiver == null || m.IsPermanentlyDeletedByReceiver == false))
+            ).OrderByDescending(m => m.SentDate).ToList());
+    }
+    else
+    {
+        // inbox
+        messages.AddRange(db.Messages.Where(
+            m =>
+            (m.ReceiverID == ThisUserID) &&
+            (m.IsDeletedByReceiver == null || m.IsDeletedByReceiver == false)
+            ).OrderByDescending(m => m.SentDate).ToList());
+    }
+
+    // The number of messages that are unread
+    int unreadMessages = messages.Count(m => m.ReadDate == null);
+
+    // For this page all I need is a preview of the messages, so I need to truncate them.
+    int MaxTextLength = 160;
+    int MaxSubjectLength = 45;
+
+    // For the shake of this page's list I project these messages 
+    var projectedMessages = messages.Select(m => new
+    {
+        MessageID = m.MessageID,
+        Subject = (m.Subject.Length > MaxSubjectLength) ? m.Subject.Substring(0, MaxSubjectLength) + "[...]" : m.Subject,
+        Text = (m.Text.Length > MaxTextLength) ? m.Text.Substring(0, MaxTextLength) + "[...]" : m.Text,
+        SenderID = m.User.UserID,
+        SenderUsername = m.User.UserName,
+        SenderFullName = (m.User.FirstName != null || m.User.LastName != null)?m.User.FirstName + " " + m.User.LastName: m.User.UserName,
+        SenderImage = m.User.ImagePath,
+        ReceiverID = m.User1.UserID,
+        ReceiverUsername = m.User1.UserName,
+        ReceiverFullName = (m.User1.FirstName != null || m.User1.LastName != null) ? m.User1.FirstName + " " + m.User1.LastName: m.User1.UserName,
+        ReceiverImage = m.User1.ImagePath,
+        SentDate = m.SentDate,
+        ReadDate = m.ReadDate
+    });
+
+    // I save these variables to the Session for future use
+    Session["messagelist"] = messages;
+    Session["mailboxType"] = mailbox;
+
+    // Pagination
+    // If there are 2 UrlData parameters, the first being the mailbox type, and the second an integer
+    // the integer is the page we are seeing.
+    int page = 1;
+    int messagesPerPage = 10;
+    int totalPages = (int) Math.Ceiling(((double) messages.Count()) / messagesPerPage);
+    if (
+        (@UrlData.Count == 2) &&
+        (@UrlData[0].Equals("sent") || (@UrlData[0].Equals("inbox")) || (@UrlData[0].Equals("trash"))) &&
+        (@UrlData[1].IsInt())
+        )
+    {
+        if (int.Parse(@UrlData[1]) <= totalPages)
+        {
+            page = int.Parse(@UrlData[1]);
+        }
+    }
+}
+
+
+@Helpers.UserInfo((User)Session["authorisedUser"], true)
+@Helpers.MailboxNavBar()
+
+@if (!feedbackMessage.Equals(""))
+{
+    @Helpers.FeedbackMessage(feedbackMessage, feedbackMessageConnotation);
+}
+
+@Helpers.Pagination(page, totalPages, mailbox)
+
+<section id="message-list">
+    
+    @if(messages.Count == 0)
+    {
+        @Helpers.FeedbackMessage("There are no messages in this folder", 0);
+    }
+
+
+    @{ 
+        // I need this for pagination
+        int messageCounter = 0;
+    }
+
+    @foreach (var m in projectedMessages)
+    {
+        messageCounter++;
+        if (messageCounter > (page - 1) * messagesPerPage && messageCounter < (page) * messagesPerPage)
+        {
+            <article class="message-row">
+                @switch (mailbox)
+                {
+                    case "sent":
+                        @Helpers.UserImgThumb(m.ReceiverImage);
+                        break;
+                    case "trash":
+                        if (m.SenderID == ThisUserID)
+                        {
+                            @Helpers.UserImgThumb(m.ReceiverImage);
+                        }
+                        else
+                        {
+                            @Helpers.UserImgThumb(m.SenderImage);
+                        }
+                        break;
+                    default: // Inbox
+                        @Helpers.UserImgThumb(m.SenderImage);
+                        break;
+                }
+
+
+                <section class="msg-sender-section">
+                    @switch (mailbox)
+                    {
+                        case "sent":
+                            <h3 class="msg-sender"><a href="~/userinfo/@m.ReceiverID">@m.ReceiverFullName</a></h3>
+                            break;
+                        case "trash":
+                            if (m.SenderID == ThisUserID)
+                            {
+                                <h3 class="msg-sender"><a href="~/userinfo/@m.ReceiverID">@m.ReceiverFullName</a></h3>
+                            }
+                            else
+                            {
+                                <h3 class="msg-sender"><a href="~/userinfo/@m.SenderID">@m.SenderFullName</a></h3>
+                            }
+                            break;
+                        default: // Inbox
+                            <h3 class="msg-sender"><a href="~/userinfo/@m.SenderID">@m.SenderFullName</a></h3>
+                            break;
+                    }
+
+
+                    <p class="msg-date">@m.SentDate</p>
+                </section>
+                @if (mailbox != "trash")
+                {
+                    <section class="read-status-icon-section">
+                        @if (m.ReadDate != null)
+                        { <img src="~/assets/icons/ic_drafts_darkcyan_24px.svg" alt="Read" title="Read" class="small-icon" />}
+                        else
+                        { <img src="~/assets/icons/ic_mail_darkcyan_24px.svg" alt="Unead" title="Unread" class="small-icon" /> }
+                    </section>
+                }
+                <section class="mailbox-origin-icon-section">
+                    @if (mailbox == "trash")
+                    {
+                        if (m.SenderID == ThisUserID)
+                        { <img src="~/assets/icons/ic_mailbox_sent_darkcyan_24px.svg" alt="Sent icon" title="This was in your Sent folder" class="small-icon" />}
+                        else
+                        { <img src="~/assets/icons/ic_move_to_inbox_darkcyan_24px.svg" alt="Inbox icon" title="This was in your Inbox" class="small-icon" /> }
+                    }
+                </section>
+                <section class="msg-preview">
+                    <a href="~/message/@m.MessageID">
+                        <p class="msg-subject">
+                            @if (m.ReadDate == null)
+                            {
+
+                                <strong>@Regex.Replace(WebUtility.HtmlDecode(m.Subject), "<.*?>", string.Empty)</strong>
+
+                            }
+                            else
+                            { @Regex.Replace(WebUtility.HtmlDecode(m.Subject), "<.*?>", string.Empty) }
+                        </p>
+                        <p class="msg-content">@Regex.Replace(WebUtility.HtmlDecode(m.Text), "<.*?>", string.Empty)</p>
+                    </a>
+                </section>
+                @if (mailbox.Equals("trash"))
+                {
+                    <a href="~/messages/@mailbox/restore/@m.MessageID" class="msg-restore" title="Put this message back to mailbox">
+                        <img src="~/assets/icons/ic_move_to_inbox_white_24px.svg" alt="Restore" title="Put this message back to mailbox" class="small-icon" />
+                        <p class="icon-caption">Restore</p>
+                    </a>
+                    <a href="~/messages/@mailbox/shred/@m.MessageID" class="msg-delete" title="Delete this message permanently. This cannot be undone.">
+                        <img src="~/assets/icons/ic_delete_forever_white_24px.svg" alt="Shred" title="Delete this message permanently.  This cannot be undone." class="small-icon" />
+                        <p class="icon-caption">Shred</p>
+                    </a>
+                }
+                else
+                {
+                    <a href="~/messages/@mailbox/delete/@m.MessageID" class="msg-delete" title="Delete this message">
+                        <img src="~/assets/icons/ic_delete_white_24px.svg" alt="Delete" title="Delete this message" class="small-icon" />
+                        <p class="icon-caption">Delete</p>
+                    </a>
+                }
+
+            </article>
+        }
+
+    }
+</section>
+
+@Helpers.Pagination(page, totalPages, mailbox)

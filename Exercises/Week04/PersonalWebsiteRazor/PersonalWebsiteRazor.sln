@@ -1,0 +1,39 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "PersonalWebsiteRazor", "..\..\WebSites\PersonalWebsiteRazor\", "{7274B8D5-0F83-4699-87A4-C482ED850D11}"
+	ProjectSection(WebsiteProperties) = preProject
+		TargetFrameworkMoniker = ".NETFramework,Version%3Dv4.5.2"
+		Debug.AspNetCompiler.VirtualPath = "/localhost_49745"
+		Debug.AspNetCompiler.PhysicalPath = "..\..\WebSites\PersonalWebsiteRazor\"
+		Debug.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49745\"
+		Debug.AspNetCompiler.Updateable = "true"
+		Debug.AspNetCompiler.ForceOverwrite = "true"
+		Debug.AspNetCompiler.FixedNames = "false"
+		Debug.AspNetCompiler.Debug = "True"
+		Release.AspNetCompiler.VirtualPath = "/localhost_49745"
+		Release.AspNetCompiler.PhysicalPath = "..\..\WebSites\PersonalWebsiteRazor\"
+		Release.AspNetCompiler.TargetPath = "PrecompiledWeb\localhost_49745\"
+		Release.AspNetCompiler.Updateable = "true"
+		Release.AspNetCompiler.ForceOverwrite = "true"
+		Release.AspNetCompiler.FixedNames = "false"
+		Release.AspNetCompiler.Debug = "False"
+		VWDPort = "49745"
+		SlnRelativePath = "..\..\WebSites\PersonalWebsiteRazor\"
+		DefaultWebSiteLanguage = "Visual C#"
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7274B8D5-0F83-4699-87A4-C482ED850D11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7274B8D5-0F83-4699-87A4-C482ED850D11}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

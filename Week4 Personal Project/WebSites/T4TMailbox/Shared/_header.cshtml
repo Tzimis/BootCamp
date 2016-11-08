@@ -1,0 +1,83 @@
+﻿@using T4TMailbox;
+@{
+
+    //---------------------------------------------------------
+    // This is the HEADER partial page
+    //---------------------------------------------------------
+    // Here the LOGIN logic is implemented
+    //---------------------------------------------------------
+
+
+    // If the header form is posted I try to authorise the User
+    if (IsPost && !Request["login-form"].IsEmpty())
+    {
+        var username = Request["username"];
+        var password = Request["password"];
+        var db = new MsgContext();
+
+        // I search the db for a user with this username
+        var thisUser = db.Users.FirstOrDefault(u => u.UserName == username);
+
+        // If he is found and the passowrd matches I create a Session variable with this User object.
+        if (thisUser != null && thisUser.Password.Equals(password))
+        {
+            Session["authorisedUser"] = thisUser;
+            Session["unreadInboxMessages"] = db.Messages.Count(m => m.ReceiverID == thisUser.UserID && m.IsDeletedByReceiver == false && m.ReadDate == null);
+            Response.Redirect("~/home");
+        }
+        else
+        {
+            // Else I redirect to the homepage with a parameter to display a loginfailed message
+            Session["authorisedUser"] = null;
+            Response.Redirect("~/home/loginfailed");
+        }
+    }
+    var authorisedUser = (User)Session["authorisedUser"];
+}
+
+<header>
+    <a href="~/home"><img src="~/assets/img/logo-small.png" alt="Time4Time Logo" id="header-logo"></a>
+    <a href="~/home"><h2 id="header-site-title"><sup>time</sup>4<sub>time</sub></h2></a>
+    <form action="/search" method="post" id="header-search">
+        <input type="search" id="searchfield" placeholder="Find a service">
+        <button type="submit">Go!</button>
+    </form>
+
+    
+    @if (Session["authorisedUser"] == null)
+    {
+        // If NOT logged in I display the login form
+        <div id="top-login-container">
+            <p id="log-in">Log In</p>
+            <form action="" method="post" id="header-login">
+                <input type="text" id="username" name="username" placeholder="Username">
+                <input type="password" id="password" name="password" placeholder="Password">
+                <button type="submit" name="login-form" value="submit">Log in</button>
+                <a href="" id="forgot-pw">Ooops! I forgot my password...</a>
+            </form>
+        </div>
+        <p class="header-button"><a href="#">Sign In</a></p>
+    }
+    else
+    {
+        // If logged in I display the username to the header and mail notifications if available
+        <p class="header-button">
+            <a href="~/home">
+                @Helpers.UserImgThumb(authorisedUser.ImagePath)
+                <span>@authorisedUser.UserName</span>
+            </a>
+        </p>
+        if (Session["unreadInboxMessages"] != null && (int)Session["unreadInboxMessages"] > 0)
+        {
+            <p class="header-button">
+                <a href="~/messages/inbox">
+                    <img src="~/assets/icons/ic_mail_outline_white_24px.svg" alt="Restore" title="Put this message back to mailbox" class="small-icon" />
+                    <span id="unread-messages">@Session["unreadInboxMessages"]</span>
+                </a>
+            </p>
+        }
+        <p class="header-button"><a href="~/home/logout">Log Out</a></p>
+    }
+    <p class="header-button" id="help-icon">
+        <a href="#" title="Help">?</a></p>
+</header>

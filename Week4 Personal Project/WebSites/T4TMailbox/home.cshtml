@@ -1,0 +1,80 @@
+﻿@using T4TMailbox;
+@{ 
+    Layout = "~/Shared/_mainTemplate.cshtml";
+    Page.Title = "Home";
+
+    //---------------------------------------------------------
+    // This is the HOME page
+    //---------------------------------------------------------
+    // For the shake of this demo the Home page shows the login information of some sample users
+    // in order for the user to be able to login with different accounts.
+    //
+    // It can take 1 URL data parameter:
+    // UrlData[0]: Malibox type: { logout | loginfailed }
+    //      logout: Sets null the "authorisedUser" Session variable.
+    //      loginfailed: Just triggers the display of an error message to the user.
+    // 
+    //---------------------------------------------------------
+
+    var db = new MsgContext();
+    string feedbackMessage = "";
+    int feedbackMessageConnotation = 0;
+
+    if (@UrlData.Count == 1 && UrlData[0].Equals("logout")){
+        Session["authorisedUser"] = null;
+        Session["mailboxType"] = "";
+        feedbackMessage = "You have successfully logged out!";
+        feedbackMessageConnotation = 1;
+    }
+
+
+    if (@UrlData.Count == 1 && UrlData[0].Equals("loginfailed"))
+    {
+        feedbackMessage = "Login failed. Try again.";
+        feedbackMessageConnotation = -1;
+    }
+}
+
+@if (Session["authorisedUser"] == null)
+{
+    if (feedbackMessage.Length > 0)
+    {
+        @Helpers.FeedbackMessage(feedbackMessage, feedbackMessageConnotation);
+    }
+
+    <h1 align="center">Welcome to <sup>time</sup>4<sub>time</sub>!</h1>
+    <p>
+        Here people can trade services.
+        When you do a service to another user the time you spend is credited to your account.
+        You can spend the time you have earned by asking a service from another user.
+    </p>
+    <p>This demo only implements the Messages functionality.</p>
+
+    <h2 align="center">Please Log In</h2>
+    <p align="center">You can find below some sample users:</p>
+    <div id="userlist">
+        @foreach (User u in db.Users)
+        {
+            <div>
+                @Helpers.UserImgThumb(@u.ImagePath)
+                <div>
+                    <h3>@Helpers.DisplayUsername(u)</h3>
+                    <p>Username: @u.UserName</p>
+                    <p>Password: @u.Password</p>
+                </div>
+            </div>
+        }
+    </div>
+}
+else {
+    @Helpers.UserInfo((User)Session["authorisedUser"], true)
+    <p> The users can communicate through an internal Message service. Each message has a sender and only one receiver. </p>
+        <p> There are three main folders:</p>
+        <ul>
+            <li>Inbox: Incoming messages</li>
+            <li>Sent: Sent messages</li>
+            <li>Trash: Deleted messages</li>
+        </ul>
+    @Helpers.MailboxNavBar()
+    @Helpers.ServicesList((User)Session["authorisedUser"])
+}

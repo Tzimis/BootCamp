@@ -1,0 +1,205 @@
+﻿@using T4TMailbox;
+@helper FeedbackMessage(string feedbackMessage, int connotation) {
+// connotation expresses the feeling/emotion this message has: { possitive (>0) | neutral (0) | negative (<0) }
+    string CSSclass = "";
+    if (connotation > 0) { CSSclass = "positive-feedback";}
+    else if (connotation < 0) { CSSclass = "negative-feedback"; }
+    else { CSSclass = "neutral-feedback"; }
+
+    <div class="feedback-message @CSSclass">@Html.Raw(@feedbackMessage)</div>
+}
+
+
+@helper UserInfo(User user, bool isSelf) {
+
+    //Displays user info. If the current user's info is displayed (isSelf) more information is visible (e.g. credits)
+
+    var db = new MsgContext();
+    var servicesOffered = db.Services.Count(s => s.OfferedBy == user.UserID && s.Active);
+
+    <section id="user-info">
+        @if (user.ImagePath == null || user.ImagePath.Equals(""))
+        {<img src="~/assets/user_img/no_user_image.jpg" alt="User Image" title="@user.UserName" id="user-image" />}
+        else
+        {<img src=@Href("~"+@user.ImagePath) alt="User Image"  title="@user.UserName" id="user-image" />}
+        <div id="user-info-text">
+
+            <h2>@Helpers.DisplayUsername(user)</h2>
+            
+            @if (isSelf)
+            { 
+                <p class="user-usage-info"><strong>Credits you own:</strong> @user.OwnedCredits</p>
+                <p class="user-usage-info"><strong>Services you offer:</strong> @servicesOffered</p>
+                <p class="user-usage-info"><strong>Address:</strong> @user.Address @user.PostCode @user.City</p>
+            }
+            else
+            {
+                <p class="user-usage-info">Active services: @servicesOffered</p>
+            }
+
+        </div>
+    </section>
+}
+
+@helper MailboxNavBar() { 
+
+    // Uses 2 session variables:
+    // (List<Message>)Session["messagelist"] which is the list of messages in the current Mailbox
+    //  string Session["mailboxType"] which is mailbox type { "inbox" | "trash" | "sent" }        
+
+    <div id="mailbox-nav-wrapper">
+
+    @if (Session["messagelist"] != null)
+    {
+
+        int unreadMessages = ((List<Message>)Session["messagelist"]).Count(m => m.ReadDate == null);
+        int totalMessages = ((List<Message>)Session["messagelist"]).Count;
+
+
+            <nav id="msg-nav">
+                <a href="~/messages/inbox" @if (Session["mailboxType"].Equals("inbox"))
+                { <text>class= "selected-btn"</text> }>
+                    @if (Session["mailboxType"].Equals("inbox"))
+                    {<img src="~/assets/icons/ic_move_to_inbox_darkcyan_24px.svg" alt="Inbox icon" title="Inbox" class="small-icon" /> }
+                    else { <img src="~/assets/icons/ic_move_to_inbox_white_24px.svg" alt="Inbox icon" title="Inbox" class="small-icon" /> }
+                    <p class="icon-caption">Inbox</p>
+                </a>
+                <a href="~/messages/sent" @if (Session["mailboxType"].Equals("sent"))
+                { <text> class="selected-btn" </text>  }>
+                    @if (Session["mailboxType"].Equals("sent"))
+                    {<img src="~/assets/icons/ic_mailbox_sent_darkcyan_24px.svg" alt="Sent icon" title="Sent messages" class="small-icon" /> }
+                    else {<img src="~/assets/icons/ic_mailbox_sent_white_24px.svg" alt="Sent icon" title="Sent messages" class="small-icon" /> }
+                    <p class="icon-caption">Sent</p>
+                </a>
+                <a href="~/messages/trash" @if (Session["mailboxType"].Equals("trash"))
+                { <text> class="selected-btn"</text> }>
+                    @if (Session["mailboxType"].Equals("trash"))
+                    { <img src="~/assets/icons/ic_delete_darkcyan_24px.svg" alt="Delete" title="Deletes messages" class="small-icon" /> }
+                    else { <img src="~/assets/icons/ic_delete_white_24px.svg" alt="Delete" title="Deletes messages" class="small-icon" /> }
+                    <p class="icon-caption">Trash</p></a>
+            </nav>
+
+            @*A sentence which says how many messages are in this mailbox is added*@
+            if (Session["mailboxType"].Equals("sent"))
+            {
+                if (totalMessages == 0)
+                {<p>No messages</p>}
+                else if (unreadMessages == 0 && totalMessages == 1)
+                {<p>You have sent 1 message and it has been read</p>}
+                else if (unreadMessages == 1 && totalMessages == 1)
+                {<p>You have sent 1 message and it has not been read</p>}
+                else if (unreadMessages == 0 && totalMessages > 0)
+                {<p>You have sent @totalMessages messages and all have been read</p>}
+                else if (unreadMessages == 1 && totalMessages > 1)
+                {<p>You have sent @totalMessages messages of which 1 has not been read</p>}
+                else
+                {<p>You have sent @totalMessages messages of which @unreadMessages have not been read</p>}
+            }
+            else if (Session["mailboxType"].Equals("inbox"))
+            {
+                if (totalMessages == 0)
+                {<p>No messages</p>}
+                else if (unreadMessages == 0 && totalMessages == 1)
+                {<p>You have 1 read message</p>}
+                else if (unreadMessages == 1 && totalMessages == 1)
+                {<p>You have 1 unread message</p>}
+                else if (unreadMessages == 0 && totalMessages > 0)
+                {<p>You have @totalMessages read messages</p>}
+                else if (unreadMessages == 1 && totalMessages > 1)
+                {<p>You have 1 unread message out of @totalMessages</p>}
+                else
+                {<p>You have @unreadMessages unread messages out of @totalMessages</p>}
+            }
+    }
+    else
+    {
+            <nav id="msg-nav">
+                <a href="~/messages/inbox">
+                    <img src="~/assets/icons/ic_move_to_inbox_white_24px.svg" alt="Inbox icon" title="Inbox" class="small-icon" /> 
+                    <p class="icon-caption">Inbox</p></a>
+                <a href="~/messages/sent">
+                    <img src="~/assets/icons/ic_mailbox_sent_white_24px.svg" alt="Sent icon" title="Sent messages" class="small-icon" />
+                    <p class="icon-caption">Sent</p></a>
+                <a href="~/messages/trash">
+                    <img src="~/assets/icons/ic_delete_white_24px.svg" alt="Delete" title="Deletes messages" class="small-icon" />
+                    <p class="icon-caption">Trash</p></a>
+            </nav>
+    }
+    
+    @*if we are not in the New Message page a button is shown*@
+    @if (!Request.Url.LocalPath.StartsWith("/newmessage"))
+    {
+        <a href="~/newmessage" id="new-message-btn">
+            <img src="~/assets/icons/ic_create_white_24px.svg" alt="Inbox icon" title="Inbox" class="small-icon" /> 
+            <p class="icon-caption">New Message</p>
+        </a>
+    }
+    </div>
+}
+
+
+
+@helper ServicesList(User user)
+{
+    // Just types the services offered by a user
+
+    var db = new MsgContext();
+    var services = db.Services.Where(s => s.OfferedBy == user.UserID).ToList();
+    foreach (Service s in services)
+    {
+            <section class="service-wrapper">
+                <h3>@s.ServiceTitle</h3>
+                <p>@s.ServiceDescription</p>
+                <p class="service-info"><strong>Location:</strong> @s.City</p>
+                <p class="service-info"><strong>Credits requested:</strong> @s.CreditsRequested</p>
+                <p class="service-info"><strong>Status:</strong> @if (s.Active == true)
+                { <text></text>}
+                else
+                { <text></text>}</p>
+            </section>
+    }
+}
+
+@helper UserImgThumb(string path) {
+
+    // Displays the user image. If there is none a placeholder is shown.
+
+    if (path == null || path.Equals(""))
+    {<img src="~/assets/user_img/no_user_image.jpg" class="user-img-thumb" alt="User Image"/>}
+    else
+    {<img src=@Href("~"+ @path) class="user-img-thumb" alt="User Image" />}
+
+}
+
+@helper DisplayUsername(User user)
+{
+    // Displays the username (which is not optional) if first name and last name is empty
+    if (@user.FirstName != null || @user.LastName != null)
+    {
+        <text>@user.FirstName @user.LastName (@user.UserName)</text>
+    }
+    else
+    {
+        <text>@user.UserName</text>
+    }
+
+}
+
+@helper Pagination(int page, int totalPages, string mailbox) {
+    <section class="pagination">
+        @if (totalPages > 1)
+        {
+            for (int i = 1; i <= totalPages; i++)
+            {
+                if (i == page)
+                {
+                    <a class="pagination-current-page" title="Current page">@i</a>
+                }
+                else
+                {
+                    <a href=@Href("~/messages/" + @mailbox + "/" + @i) class="pagination-page" title="Page @i">@i</a>
+                }
+            }
+        }
+    </section>
+}

@@ -1,0 +1,45 @@
+﻿@using T4TMailbox;
+@{
+    Layout = "~/Shared/_mainTemplate.cshtml";
+    Page.Title = "User info";
+
+    //---------------------------------------------------------
+    // In this page someone can view some info about a User
+    // This is useful if someone clicks the name of a user in the messages list
+    //---------------------------------------------------------
+
+    if (Session["messagelist"] != null)
+    {
+        Message messageThatThisUserSent = ((List<Message>)Session["messagelist"]).FirstOrDefault(m => m.SenderID == @UrlData[0].AsInt());
+        Message messageThatThisUserReceived = ((List<Message>)Session["messagelist"]).FirstOrDefault(m => m.ReceiverID == @UrlData[0].AsInt());
+
+
+        if (@UrlData.Count == 1
+            && @UrlData[0].IsInt()
+            && (messageThatThisUserSent != null || messageThatThisUserReceived != null)
+            )
+
+        {
+            User user = null;
+            // Try sender
+            if (messageThatThisUserSent != null)
+            { user = messageThatThisUserSent.User; }
+            // Try Receiver
+            if (messageThatThisUserReceived != null)
+            { user = messageThatThisUserReceived.User1; }
+            if (user != null)
+            {
+                @Helpers.UserInfo(user, false);
+                @Helpers.ServicesList(user);
+            }
+        }
+        else
+        {
+            Response.Redirect("~/home");
+        }
+    }
+    else
+    {
+        Response.Redirect("~/home");
+    }
+}

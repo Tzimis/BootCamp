@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\ExerciseUniversity\ExerciseUniversity\bin\Debug\ExerciseUniversity.exe.config
+c:\users\george\documents\visual studio 2015\Projects\ExerciseUniversity\ExerciseUniversity\bin\Debug\ExerciseUniversity.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseUniversity\ExerciseUniversity\bin\Debug\ExerciseUniversity.pdb
+c:\users\george\documents\visual studio 2015\Projects\ExerciseUniversity\ExerciseUniversity\obj\Debug\ExerciseUniversity.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\ExerciseUniversity\ExerciseUniversity\obj\Debug\ExerciseUniversity.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseUniversity\ExerciseUniversity\obj\Debug\ExerciseUniversity.pdb

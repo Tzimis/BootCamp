@@ -1,0 +1,6 @@
+c:\users\george\documents\visual studio 2015\Projects\ExerciseADONET\ExerciseADONET\bin\Debug\ExerciseADONET.exe.config
+c:\users\george\documents\visual studio 2015\Projects\ExerciseADONET\ExerciseADONET\bin\Debug\ExerciseADONET.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseADONET\ExerciseADONET\bin\Debug\ExerciseADONET.pdb
+c:\users\george\documents\visual studio 2015\Projects\ExerciseADONET\ExerciseADONET\obj\Debug\ExerciseADONET.csprojResolveAssemblyReference.cache
+c:\users\george\documents\visual studio 2015\Projects\ExerciseADONET\ExerciseADONET\obj\Debug\ExerciseADONET.exe
+c:\users\george\documents\visual studio 2015\Projects\ExerciseADONET\ExerciseADONET\obj\Debug\ExerciseADONET.pdb

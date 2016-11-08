@@ -1,0 +1,14 @@
+c:\users\george\documents\visual studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\ExerciseEf6.exe.config
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\ExerciseEf6.exe
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\ExerciseEf6.pdb
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\EntityFramework.dll
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\EntityFramework.SqlServer.dll
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\EntityFramework.xml
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\bin\Debug\EntityFramework.SqlServer.xml
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.csprojResolveAssemblyReference.cache
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.exe
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.pdb
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.Migrations.Blog.resources
+C:\Users\George\Documents\Visual Studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.csproj.GenerateResource.Cache
+C:\Users\George\documents\visual studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.Migrations.InsertedUsers.resources
+C:\Users\George\documents\visual studio 2015\Projects\ExerciseEf6\ExerciseEf6\obj\Debug\ExerciseEf6.Migrations.InsertedUsersDbSet.resources
