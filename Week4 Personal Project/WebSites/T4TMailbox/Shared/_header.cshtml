@@ -28,7 +28,7 @@
         else
         {
             // Else I redirect to the homepage with a parameter to display a loginfailed message
-            Session["authorisedUser"] = null;
+            Session.Clear();
             Response.Redirect("~/home/loginfailed");
         }
     }
