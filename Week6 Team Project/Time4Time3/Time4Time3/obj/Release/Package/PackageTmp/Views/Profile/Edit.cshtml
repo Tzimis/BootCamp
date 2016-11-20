@@ -1,0 +1,108 @@
+﻿@model Time4Time3.Models.ProfileEditModel
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<h2>Edit Profile</h2>
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="container">
+        <h3><i class="fa fa-user-circle" aria-hidden="true">&nbsp;@User.Identity.Name</i></h3>
+        <hr />
+        <div class="row editProfileRow">
+            <div class="form-horizontal">
+                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+                @Html.HiddenFor(Model => Model.Id)
+                <div class="col-xs-offset-2 col-xs-8 col-sm-6" id="personalInfo">
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.FirstName, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(Model => Model.FirstName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => Model.FirstName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.LastName, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(Model => Model.LastName, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(Model => Model.LastName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.Email, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(Model => Model.Email, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(Model => Model.Email, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.ImagePath, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        <input type="file" class="form-control" name="ImagePath" />
+                    </div>
+                </div>
+
+                <div class="form-group" id="SubmitEditBtn">
+                    <div class="col-md-offset-2 col-md-10">
+                        <input type="submit" value="Save" class="btn btn-default" />
+                    </div>
+                    <div>
+                        &#171; @Html.ActionLink("Back to Profile", "Index") |
+                        @Html.ActionLink("Change Password", "ChangePassword", "Manage")
+                    </div>
+               </div>
+            </div>
+            <div class="col-xs-offset-2 col-xs-8 col-sm-6 " id="demographics">
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.Address, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(Model => Model.Address, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(model => Model.Address, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.City, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(Model => Model.City, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(Model => Model.City, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    @Html.LabelFor(Model => Model.PostalCode, htmlAttributes: new { @class = "control-label col-md-2" })
+                    <div class="col-md-10">
+                        @Html.EditorFor(model => Model.PostalCode, new { htmlAttributes = new { @class = "form-control" } })
+                        @Html.ValidationMessageFor(Model => Model.PostalCode, "", new { @class = "text-danger" })
+                    </div>
+                </div>          
+
+            </div>
+          </div>
+       </div>
+    </div>
+}
+
+
+
+
+@section scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script>
+        $(window).on('resize', function () {
+            var win = $(this); 
+            if (win.width()< 750) {
+                $("#SubmitEditBtn").appendTo($("#demographics"))
+            } else {
+                $("#SubmitEditBtn").appendTo($("#personalInfo"))
+            }
+        });
+    </script>
+
+}

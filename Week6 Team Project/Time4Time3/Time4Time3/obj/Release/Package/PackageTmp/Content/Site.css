@@ -1,0 +1,327 @@
+﻿body {
+    padding-top: 50px;
+    font-family: 'Open Sans', sans-serif;
+    font-size:16px;
+    background-color:#222222;
+}
+
+/* Set padding to keep content from hitting the edges */
+.body-content {
+    padding-left: 0;
+    padding-right: 0;
+    background: url(../Assets/img/abstract-mosaic-tall.png) no-repeat center center fixed;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
+}
+
+h2{
+    margin: 0 auto;
+    padding-top: 40px;
+    text-align:center;
+  
+}
+
+.navbar-inverse {
+    background-color: #353535;
+    border-color: #353535;
+}
+
+.navbar-inverse .navbar-toggle:hover, .navbar-inverse .navbar-toggle:focus{
+    background-color: #353535;
+}
+
+.navbar-inverse .navbar-brand {
+    color: white;
+}
+
+.navbar-inverse .navbar-brand:hover{
+    color: #f5ca26;
+}
+
+.navbar-inverse .navbar-nav>li>a{
+    color: white;
+}
+
+.navbar-inverse .navbar-nav>li>a:hover{
+    color: #f5ca26;
+}
+
+/* Override the default bootstrap behavior where horizontal description lists 
+   will truncate terms that are too long to fit in the left column 
+*/
+.dl-horizontal dt {
+    white-space: normal;
+}
+
+.mybadge{
+    font-size: 12px;
+    margin-right: 5px;
+    padding: 0 0;
+    border-radius: 50%;
+}
+
+
+.navbar{
+    margin-bottom: 0;
+}
+
+.user-thumbnail{
+    width: 2em;
+    height: 2em;
+    min-width: 2em;
+    min-height: 2em;
+    display: block;
+    border-radius: 50%;
+    border-width: 0;
+}
+
+.header-logo{
+    width: auto;
+    height:50px;
+    padding:8px;
+}
+
+/* Set width on the form input elements since they're 100% wide by default */
+input,
+select,
+textarea {
+    max-width: 280px;
+}
+
+.profileEditControl{
+    text-align:right;
+}
+.profile-Info dt{
+    text-align:left;
+}
+.profile-Info{
+    background:rgba(255,255,255, 0.5);
+    border-radius:4px;
+    padding:7px;
+}
+.tab-content {
+    border: 1px solid #eaeaea;
+    padding-top:7px;
+    border-top-right-radius:3px;
+}
+
+.profileService-Component {
+    border:1px solid #f2f2f2;
+    border-radius:5px;
+    padding:5px;
+    margin:7px;
+    display:flex;
+    justify-content:center;
+    box-shadow:0 2px 4px #d2d2d2;
+    background-color:#f8f8f8;
+    min-height:150px;
+    margin-top:0;
+}
+.searchComponent{
+    border:1px solid #f2f2f2;
+    border-radius:5px;
+    padding:5px 20px 20px 20px;
+    margin:7px;
+    margin-top:15px;
+    box-shadow:0 2px 4px #d2d2d2;
+    background:rgba(248,248,248,0.9);
+    min-height:150px;
+    display:flex;
+}
+.controlsContainer{
+    display:flex;
+    flex-flow:column;
+    align-items:stretch;
+    justify-content:center;
+}
+.profileService-Controls{
+    display:flex;
+    flex-flow:column;
+    align-items:flex-end;
+    align-content:center;
+    height:auto;
+}
+.profileService-Info{
+    display:flex;
+    flex-flow:column;
+    align-items:flex-start;
+    justify-content:space-around;
+
+}
+.btn-md{
+    border-radius:50%;
+    margin:5px;
+}
+.profileService-Image{
+    display:flex;
+    align-items:center;
+}
+.profileService-Image>img{
+    height:100%;
+    width:100%;
+    max-height:140px;
+    max-width:180px;
+    margin:auto;
+    display:block;
+    object-fit:cover;
+}
+#personalInfo , #demographics{
+    margin:auto;
+    margin-top:20px;
+}
+.form-horizontal , .editProfileRow{
+    background:rgba(255,255,255, 0.5);
+    border-radius:4px;
+    padding:7px;
+    padding-bottom:15px;
+    margin-bottom:20px;
+    padding-top:10px;
+}
+#submitEditBtn div{
+  padding-bottom:10px;
+}
+.editProfileRow>.form-horizontal{
+    background:none;
+}
+div>span>a{
+    text-decoration:none;
+}
+
+.flex-group{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+}
+span.label{
+    border-radius:50%;
+    margin-left:5px;
+    font-size:12px;
+    line-height:1.2;
+}
+span.glyphicon{
+    font-size:18px;
+}
+
+.glyphicon-star-empty{
+    color:#ffd200;
+    zoom:1.8;
+}
+.rating{
+    zoom:1.2;
+}
+span.label-primary{
+    background-color:black;
+}
+
+.home-jumbotron{
+    background-color: transparent;
+}
+
+.home-jumbotron h1{
+    color: darkslateblue;
+    font-size: 40px;
+}
+
+.tab-content {
+    background-color: white;
+    margin-top:0;
+}
+.nav-tabs+.tab-content{
+    border-top:0;
+}
+.profile-Info > dt{
+    font-weight:900;
+    line-height:1.5;
+}
+.profile-Info > dd{
+    font-weight:600;
+    line-height:2;
+    font-size:14px;
+}
+.home-tile-row{
+    background-color: #eeeeee;
+    background-color: rgba(238,238,238,0.7);
+}
+.flex-results{
+    display:flex;
+    flex-flow:column;
+    align-content:center;
+    align-items:center;
+    justify-content:space-around;
+}
+.nav-tabs>li>a{
+    text-decoration:none;
+    font-size:16px;
+    font-weight:600;
+    color:#333;
+    background-color: #efefef;
+    background-color: rgba(255,255,255,0.5);
+}
+.home-tile{
+    /*background-color: #eee;*/
+    margin-bottom: 20px;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+.home-inner-tile{
+    /*background-color: #fff;*/
+    margin-top: 5px;
+    padding: 10px;
+}
+
+.home-inner-tile p{
+    margin: 0;
+    padding: 0;
+}
+
+.profileRow{
+    background:rgba(255,255,255, 0.5);
+}
+#searchResults{
+    margin-top:50px;
+    padding:15px;
+    padding-top:0;
+}
+#searchResults .table{
+    margin-bottom:0;
+}
+
+
+/****** SITE FOOTER *****************/
+footer.site-footer{
+    padding: 0.25em 1em;
+    padding-top: 1em;
+    color: lightgray;
+    border-top: 1px solid #101010;
+    box-shadow: inset 0 20px 20px -15px rgba(0, 0, 0, 0.7);
+    background-color:#222222;
+}
+
+footer.site-footer a{
+    color: lightgray;
+}
+ 
+a{
+    color:#226;
+}
+a:hover{
+    text-decoration:none;
+    color:#22e;
+}
+
+footer.site-footer>.row>div>h4{
+    color: #f5ca26;
+    text-transform: uppercase;
+    font-size: 16px;
+    font-weight:700;
+    letter-spacing:1.2px;
+}
+
+/******* PROFILE ***************/
+
+.tab-pane{
+    background-color: #fff;
+}

@@ -1,0 +1,267 @@
+﻿@using Microsoft.AspNet.Identity;
+@using Time4Time3.Entities;
+@model Time4Time3.Models.ProfileViewModel
+
+<div id="services" class="tab-pane fade in active">
+    @if(Model.Services.Count == 0) { @Html.Partial("_EmptyTabPartial", "You have no services")}
+    @{ foreach (var service in Model.Services)
+        {
+            <div class="row profileService-Component">
+                <div class="col-xs-2 profileService-Image">
+
+                    @if (string.IsNullOrWhiteSpace(service.ImagePath))
+                    {
+                        <img class="img img-rounded img-responsive" src="~/Assets/img/no-image.png" height="140" width="140" />
+                    }
+                    else
+                    {
+                        <img class="img img-rounded img-responsive" src=@Href(service.ImagePath) height="140" width="140" />
+                    }
+                </div>
+                <div class="col-xs-8 profileService-Info">
+                    <div class="flex-group">
+                        <h3>@service.Title</h3>
+                        @{
+                            if (service.IsActive == Service.ServiceStatus.Active)
+                            {
+                                <span class="label label-success"> Active</span>
+                            }
+                            else if (service.IsActive == Service.ServiceStatus.Inactive)
+                            {
+                                <span class="label label-danger"> Inactive</span>
+                            }
+                        }
+                    </div>
+                    <p>@service.Description</p>
+                    <h5><strong>Credits : </strong>@service.CreditWorth.ToString()</h5>
+                </div>
+                <div class="col-xs-2 controlsContainer">
+                    <div class="profileService-Controls">
+                        <a class="btn btn-default btn-md" role="button" href=@Href("~/Profile/EditService/"+service.Id) title="Edit Service">
+                            <span class="glyphicon glyphicon-edit"></span>
+                        </a>
+                        <a class="btn btn-default btn-md" role="button" data-toggle="modal" data-target="#delete-confirmation" data-id="@service.Id" data-title="@service.Title" title="Delete Service">
+                            <span class="glyphicon glyphicon-remove-circle"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+                            }
+    }
+</div>
+
+<div id="requests" class="tab-pane fade">
+    @if (Model.Requests.Count == 0)
+    { @Html.Partial("_EmptyTabPartial", "You have made no requests")}
+    @{
+        foreach (var request in Model.Requests)
+        {
+            <div class="row profileService-Component">
+                <div class="col-xs-2 profileService-Image">
+                    @if (string.IsNullOrWhiteSpace(request.Service.ImagePath))
+                    {
+                        <img class="img img-rounded img-responsive" src="~/Assets/img/no-image.png" />
+                    }
+                    else
+                    {
+                        <img class="img img-rounded img-responsive" src=@Href(request.Service.ImagePath) />
+                    }
+                    
+                </div>
+                <div class="col-xs-8 profileService-Info">
+                    <div class="flex-group">
+                        <h3>@request.Service.Title</h3>
+                        @{
+                            if (request.Status == Transaction.TransactionStatus.New)
+                            {
+                                <span class="label label-default">New</span>
+                                <span class="label label-primary">@request.Service.Supplier.UserName</span>
+                            }
+                            else if (request.Status == Transaction.TransactionStatus.Accepted)
+                            {
+                                <span class="label label-success">Accepted</span>
+                                <span class="label label-primary">@request.Service.Supplier.UserName</span>
+                            }
+                        }
+                    </div>
+                    <p>Start Date: @request.StartDate</p>
+                    <p>@request.Service.Description</p>
+                    <h5><strong>Overall Value : </strong>@request.CreditValue.ToString()</h5>
+                </div>
+                <div class="col-xs-2 controlsContainer">
+                    <div class="profileService-Controls">
+                        @if (request.Status == Transaction.TransactionStatus.Accepted)
+                        {
+                            <a class="btn btn-default btn-md" role="button" href=@Href("~/Profile/Rate/" + request.Id) title="Complete & Rate">
+                                <span class="glyphicon glyphicon-ok-circle"></span>
+                            </a>
+                        }
+                        <a class="btn btn-default btn-md" role="button" href=@Href("~/Profile/DeclineRequest/"+request.Id) title="Cancel Request">
+                            <span class="glyphicon glyphicon-ban-circle"></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+                            }
+    }
+</div>
+
+<div id="transactions" class="tab-pane fade">
+    @if (Model.Transactions.Count == 0)
+    { @Html.Partial("_EmptyTabPartial", "You have no transaction history")}
+    @{ foreach (var tr in Model.Transactions)
+        {
+            <div class="row profileService-Component">
+                <div class="col-xs-2 profileService-Image">
+
+                    @if (string.IsNullOrWhiteSpace(tr.Service.ImagePath))
+                    {
+                        <img class="img img-rounded img-responsive" src="~/Assets/img/no-image.png" height="140" width="140" />
+                    }
+                    else
+                    {
+                        <img class="img img-rounded img-responsive" src=@Href(tr.Service.ImagePath) height="140" width="140" />
+                    }
+                </div>
+                <div class="col-xs-8 profileService-Info">
+                    <div class="flex-group">
+                        <h3>@tr.Service.Title</h3>
+                        @{
+                            if (tr.Status == Transaction.TransactionStatus.Completed)
+                            {
+                                <span class="label label-success">Completed</span>
+                                if (tr.Sender.UserName == User.Identity.GetUserName())
+                                { <span class="label label-primary">@tr.Service.Supplier.UserName</span>}
+                                else
+                                { <span class="label label-primary">@tr.Sender.UserName</span>}
+                  
+                            }
+                            else if (tr.Status == Transaction.TransactionStatus.Cancelled)
+                            {
+                                <span class="label label-danger">Cancelled</span>
+                                if (tr.Sender.UserName == User.Identity.GetUserName())
+                                { <span class="label label-primary">@tr.Service.Supplier.UserName</span>}
+                                else
+                                { <span class="label label-primary">@tr.Sender.UserName</span>}
+                            }
+                        }
+                    </div>
+                    <p>Start Date: @tr.StartDate</p>
+                    @if (tr.Status == Transaction.TransactionStatus.Cancelled)
+                    { <p>Cancelled Date: @tr.CancelDate</p>}
+                    @if (tr.Status == Transaction.TransactionStatus.Completed)
+                    {  <p>Completed Date: @tr.CompleteDate</p>}
+                   
+
+                    <p>@tr.Service.Description</p>
+                    @if (User.Identity.GetUserId() == tr.Sender_Id)
+                    {
+                        <h5><strong>Credits Cost: </strong>@tr.CreditValue</h5>
+                    }
+                    else
+                    {
+                        <h5><strong>Credits Earned: </strong>@tr.CreditValue</h5>
+                    }
+                    
+                </div>
+                <div class="col-xs-2 controlsContainer">
+                    <div class="profileService-Controls">
+
+                        @if (tr.Rating != null)
+                        {
+                            <strong><span class="glyphicon glyphicon-star-empty"></span></strong>
+                            <strong class="rating"> @tr.Rating.ToString() / 10</strong>
+                        }
+                    </div>
+                </div>
+            </div>
+                            }
+    }
+</div>
+<div id="todo" class="tab-pane fade">
+    @if (Model.Todo.Count == 0)
+    { @Html.Partial("_EmptyTabPartial", "You have no requests to do")}
+    @{ foreach (var tr in Model.Todo)
+        {
+            <div class="row profileService-Component">
+                <div class="col-xs-2 profileService-Image">
+
+                    @if (string.IsNullOrWhiteSpace(tr.Service.ImagePath))
+                    {
+                        <img class="img img-rounded img-responsive" src="~/Assets/img/no-image.png" height="140" width="140" />
+                    }
+                    else
+                    {
+                        <img class="img img-rounded img-responsive" src=@Href(tr.Service.ImagePath) height="140" width="140" />
+                    }
+                </div>
+                <div class="col-xs-8 profileService-Info">
+                    <div class="flex-group">
+                        <h3>@tr.Service.Title</h3>
+                        @{
+                            if (tr.Status == Transaction.TransactionStatus.New)
+                            {
+                                <span class="label label-default"> New</span>
+                                                    <span class="label label-primary">@tr.Sender.UserName</span>
+                            }
+                            else if (tr.Status == Transaction.TransactionStatus.Accepted)
+                            {
+                                <span class="label label-success"> Accepted</span>
+                                                    <span class="label label-primary">@tr.Sender.UserName</span>
+                            }
+                        }
+                    </div>
+                    <p>Start Date: @tr.StartDate</p>
+                    <p>@tr.Service.Description</p>
+                    <h5><strong>Credits : </strong>@tr.CreditValue</h5>
+                </div>
+                <div class="col-xs-2 controlsContainer">
+                    <div class="profileService-Controls">
+                        <div class="profileService-Controls">
+                            @if (tr.Status == Transaction.TransactionStatus.New)
+                            {
+                                <a class="btn btn-default btn-md" role="button" href=@Href("~/Profile/AcceptRequest/" + tr.Id) title="Accept">
+                                    <span class="glyphicon glyphicon-thumbs-up"></span>
+                                </a>
+                            }
+                            <a class="btn btn-default btn-md" role="button" href=@Href("~/Profile/DeclineRequest/"+tr.Id) title="Decline">
+                                <span class="glyphicon glyphicon-thumbs-down"></span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                            }
+    }
+</div>
+
+<!-- /.modal -->
+<div class="modal fade" id="delete-confirmation" tabindex="-1" role="dialog" aria-labelledby="delete-confirmation-label">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delete-confirmation-label">Delete Service</h4>
+            </div>
+            <div class="modal-body">
+                <p class="text-center">
+                    <i class="fa fa-exclamation-triangle fa-5x orange-icon" aria-hidden="true"></i><br />
+                    Are you sure you want to delete this service?
+                </p>
+                <div class="modal-message">
+                    <strong>Title: </strong><span id="modal-title-placeholder"></span>
+                </div>
+                <p class="text-center">This action cannot be undone.</p>
+            </div>
+            <div class="modal-footer">
+                <form method="post" action="~/Profile/DeleteService">
+                    <input type="hidden" name="serviceId" value="" />
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-danger">Confirm</button>
+                </form>
+            </div>
+        </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>

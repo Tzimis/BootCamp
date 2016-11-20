@@ -1,0 +1,85 @@
+﻿@model Time4Time3.Models.HomeViewModel
+@using Time4Time3.Entities
+@using Time4Time3.Logic
+@using Time4Time3.Models
+
+@{
+    ViewBag.Title = "Home";
+}
+
+
+<div class="jumbotron home-jumbotron" style="margin-bottom:3em;">
+    <h2 class="text-center">Someone near you can do what you need!</h2>
+    
+    @using (Html.BeginForm("Results", "Search", FormMethod.Get))
+    {
+        <div class="input-group input-group-lg col-sm-10 col-sm-offset-1">
+            <input type="text" name="searchWord" class="form-control" placeholder="Search for a service..." style="max-width: 100%;">
+            <span class="input-group-btn">
+                <button class="btn btn-default" type="submit" name="Search"><span class="glyphicon glyphicon-search" aria-hidden="true"></span></button>
+            </span>
+        </div><!-- /input-group -->
+    }
+</div><!-- /.col-lg-6 -->
+
+
+
+
+<div class="jumbotron home-jumbotron" style="background-color: #eee; margin-bottom:0;">
+    <h2 class="text-center">Your time is valuable</h2>
+    <p class="lead text-center">Time4Time is a community of people exchanging services and knowledge. It is an alternative to contemporary money systems. All transactions are made based on the value
+      of the time as an exchange unit. 
+    </p>
+    <p class="text-center"><a href="~/Account/Register" class="btn btn-primary btn-lg">Join us &raquo;</a></p>
+</div>
+
+<div class="row home-tile-row">
+    <div class="col-md-4">
+        <div class="home-tile">
+            <h2 class="text-center">Most Requested</h2>
+            @foreach (Service s in Model.MostRequestedServices)
+            {
+                <div class="home-inner-tile">
+                    <h4>@s.Title</h4>
+                    <p>@s.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="home-tile">
+            <h2 class="text-center">High contributors</h2>
+            @foreach (ApplicationUser u in Model.UsersWithMostServices)
+            {
+                <div class="home-inner-tile row">
+                    <img src=@Href(u.ImagePath) class="home-user-thumb img-circle col-xs-3">
+                    <div class="col-xs-9">
+                        <h4>@Utils.GetFullName(u), @u.Services.Count(s => s.IsActive == Service.ServiceStatus.Active) Services</h4>
+                        @foreach (Service s in u.Services)
+                        {
+                            <p>@s.Title, @s.Location</p>
+                        }
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="home-tile">
+            <h2 class="text-center">Highest rated</h2>
+            @foreach (KeyValuePair<Service, double?> pair in Model.HighestRatedServices)
+            {
+                Service s = pair.Key;
+                double? rating = pair.Value;
+                if (rating == null) { rating = 0; }
+                string formatedRating = $"{rating:0.0}";
+
+                <div class="home-inner-tile">
+                    <h4><span class="label label-success">@formatedRating</span> @s.Title</h4>
+                    <p>@s.Description</p>
+                </div>
+            }
+        </div>
+    </div>
+</div>

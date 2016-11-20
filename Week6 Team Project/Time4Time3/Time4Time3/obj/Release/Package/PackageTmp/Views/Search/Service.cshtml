@@ -1,0 +1,63 @@
+﻿@model Time4Time3.Models.SearchViewModel
+@using Microsoft.AspNet.Identity;
+
+@{
+    ViewBag.Title = "Service";
+}
+
+<h2>Service</h2>
+
+<p>
+    @if (Model.SupplierId != User.Identity.GetUserId())
+    {
+        @Html.ActionLink("Ask for it", "AskTransaction", "Profile", routeValues: new { id = @Model.Id }, htmlAttributes: new { id = "asklink" })
+    }
+</p>
+
+<table class="table table-hover table-responsive" id="searchResults"">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.Title)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreditWorth)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Location)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.ImagePath)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Onoma)
+        </th>
+        <th></th>
+    </tr>
+
+
+    <tr>
+        <td>
+            @Html.DisplayFor(model => model.Title)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Description)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.CreditWorth)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Location)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.ImagePath)
+        </td>
+        <td>
+            @Html.DisplayFor(model => model.Onoma)
+        </td>
+        
+    </tr>
+
+</table>

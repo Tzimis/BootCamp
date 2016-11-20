@@ -1,0 +1,55 @@
+﻿@using Microsoft.AspNet.Identity;
+@model List<Time4Time3.Models.SearchViewModel>
+
+<h2>Services</h2>
+
+<div id="searchResults">
+    @if (Model != null)
+    {
+
+        foreach (var a in Model)
+        {
+            <div class="searchComponent">
+                <div class="col-sm-2 hidden-xs profileService-Image">
+                    @if (string.IsNullOrWhiteSpace(a.ImagePath))
+                    {
+                        <img class="img img-rounded img-responsive" src="~/Assets/img/no-image.png" height="140" width="140" />
+                    }
+                    else
+                    {
+                        <img class="img img-rounded img-responsive" src=@Href(a.ImagePath) height="140" width="140" />
+                    }
+                </div>
+                <div class="col-sm-8">
+                    <header>
+                        <h3><strong>@a.Title</strong></h3>
+                    </header>
+                    <p>@a.Description</p>
+                    <p><em>Offered By <strong><a href="~/Search/MemberProfile?userId=@a.SupplierId&returnUrl=@Request.Url.PathAndQuery">@a.Onoma</a></strong> for <strong>@a.CreditWorth</strong> Credits </em></p>
+                </div>
+                <aside class="col-sm-2 flex-results">
+                    @if (a.SupplierId != User.Identity.GetUserId())
+                    {
+                        @Html.ActionLink("Ask For It", "AskTransaction", "Profile",
+                                 routeValues: new { id = @a.Id },
+                                 htmlAttributes: new { id = "sendlink", @class = "btn btn-default btn-md" })
+
+                        <span><i class="fa fa-map-marker fa-2x"></i> @a.Location</span>
+                        if (a.Rating != null)
+                        {
+                            <strong><span class="glyphicon glyphicon-star-empty"></span></strong>
+                            <strong class="rating"> @a.Rating.ToString() / 10</strong>
+                        }
+                    }
+
+                </aside>
+                
+                </div>
+
+        }
+        }
+        else
+        {
+        <p>There is no extisting service or user with that name</p>
+        }
+    </div>

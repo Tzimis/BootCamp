@@ -1,0 +1,44 @@
+﻿@model Time4Time3.Entities.Transaction
+
+@{
+    ViewBag.Title = "Rate";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container" style="background-color: white; padding: 15px;">
+    <h2>Rate</h2>
+
+    <div class="col-xs-12 profileService-Info row">
+        <h3>@Model.Service.Title <span class="label label-success">by @Model.Service.Supplier.UserName</span></h3>
+        <p>@Model.Service.Description</p>
+        <span>Status: @Model.Status</span>
+        <h5><strong>Credit value : </strong> @Model.CreditValue.ToString()</h5>
+    </div>
+
+    <div class="col-xs-12 rating">
+        
+        <form id="rating" name="rating" method="post">
+            <div class="row">
+                <p class="col-xs-4 text-right"><strong>Please rate this service: </strong></p>
+                <p class="col-xs-1 text-right">Sucks</p>
+                <input id="rating" name="rating" type="range" min="0" max="10" step="1" value="5" required class="col-xs-6" style="max-width:100%" />
+                <p class="col-xs-1 text-left">Excellent!</p>
+            </div>
+            <div class="row">
+                <p class="col-xs-4 text-right"><strong>Deny credits: </strong></p>
+                <p class="col-xs-1">@Html.CheckBox("denyCredits")
+                </p>
+                <p class="col-xs-7">
+                    <small><em>
+                        Important: Only if you are dissatisfied with this transaction check this box. In this case the provider of the service will not receive the credits.
+                    </em></small>
+                </p>
+
+            </div>
+            <div class="row text-center">
+                <input type="hidden" name="id" value="@Model.Id" />
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+    </div>
+</div>

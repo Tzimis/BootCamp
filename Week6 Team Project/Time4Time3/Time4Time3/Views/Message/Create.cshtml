@@ -1,0 +1,129 @@
+﻿@model Time4Time3.Models.CreateMessageViewModel
+@using Time4Time3.Entities
+@using Time4Time3.Models
+@using Time4Time3.Logic
+@using Microsoft.AspNet.Identity;
+
+@{
+    ViewBag.Title = "Create new message";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+
+    @Styles.Render("~/Content/select2.min.css")
+    @Styles.Render("~/Content/Messages.css")
+}
+
+@section scripts{
+    @Scripts.Render("~/Scripts/select2.min.js")
+    @Scripts.Render("~/Scripts/bootstrap-maxlength.js")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+
+            $(".select2").select2();
+            $('#message-content-editor').maxlength({ alwaysShow: true });
+            $('#Subject').maxlength({ alwaysShow: true });
+
+        });
+
+    </script>
+}
+
+
+
+
+<div class="above-tabs-wrapper">
+    <h2>@Model.Action message</h2>
+</div>
+
+
+<ul class="nav nav-tabs mail-tabs">
+
+    <li role="presentation"><a href="~/Messages/Inbox" title="Inbox"><i class="fa fa-inbox" aria-hidden="true"></i> Inbox</a></li>
+    <li role="presentation"><a href="~/Messages/Sent" title="Sent"><i class="fa fa-paper-plane" aria-hidden="true"></i> Sent</a></li>
+    <li role="presentation"><a href="~/Messages/Trash" title="Trash"><i class="fa fa-trash" aria-hidden="true"></i> Trash</a></li>
+    <li role="separator" class="divider">
+    </li>
+</ul>
+
+@using (Html.BeginForm())
+{
+    @Html.AntiForgeryToken()
+
+    <div class="form-horizontal message-form">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+        <div class="row">
+            <div class="message-form-element col-sm-4 col-xs-12">
+                <div class="input-group">
+                    <span for="Receiver" class="input-group-addon">To</span>
+                    <select class="form-control select2" id="Receiver" name="ReceiverID">
+                        <option value=""></option>
+                        @foreach (ApplicationUser u in Model.Receivers)
+                        {
+                            if (u.Id != User.Identity.GetUserId())
+                            {
+		                    <option value="@u.Id" @if (Model.ParentMessage != null && Model.ParentMessage.SenderID == u.Id && Model.Action == CreateMessageViewModel.MessageAction.Reply)
+                            {<text>selected</text> } >@Utils.GetFullName(u) / @u.UserName</option> 
+                            }
+                        }
+                    </select>
+                </div>
+                @Html.ValidationMessageFor(model => model.ReceiverID, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="message-form-element col-sm-offset-1 col-sm-7 col-xs-12">
+                <div class="input-group">
+                    <span for="Subject" class="input-group-addon">Subject</span>
+                    <input type="text" class="form-control" aria-describedby="subject" id="Subject" name="Subject" value="@Model.Subject" maxlength="120">
+                </div>
+                @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+        <input type="hidden" id="RelatedTransactionID" name="RelatedTransactionID" value="@Model.RelatedTransactionID">
+        <input type="hidden" id="Action" name="Action" value="@Model.Action">
+        <input type="hidden" id="ParentMessageId" name="ParentMessageId" value="@Model.ParentMessageId">
+
+        <div class="form-group">
+            <div class="col-md-12">
+                <textarea id="message-content-editor" maxlength="600" rows="3" class="form-control" placeholder="Your message..." name="Content" required>@Model.Content</textarea>
+                @Html.ValidationMessageFor(model => model.Content, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+            <div class="input-group col-xs-12">
+                <button type="submit" name="msgaction" value="Send" class="btn btn-primary btn-block">
+                    Send
+                </button>
+            </div>
+
+        @if (Model.ParentMessage != null && Model.Action == CreateMessageViewModel.MessageAction.Reply)
+        {
+            <div class="message-container">
+                <div class="msg-view-subject">
+                    @Model.ParentMessage.Subject
+                </div>
+
+                <p class="msg-view-sender-info">
+                    <strong>From:</strong> @Utils.GetFullName(Model.ParentMessage.Sender)<br />
+                    <strong>To:</strong> @Utils.GetFullName(Model.ParentMessage.Receiver)<br />
+                    <strong>Date:</strong><time datetime="@Model.ParentMessage.SentDate">@Model.ParentMessage.SentDate</time><br />
+                    <strong>Read report: </strong>
+                    @if (@Model.ParentMessage.ReadDate == null)
+                    {
+                        <text>Unread</text>
+                    }
+                    else
+                    {
+                        <text>Read at </text><time datetime="@Model.ParentMessage.ReadDate">@Model.ParentMessage.ReadDate</time>
+                    }
+                </p>
+                <div class="msg-view-content">@Model.ParentMessage.Content</div>
+            </div>
+        }
+
+    </div>
+}

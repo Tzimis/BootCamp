@@ -1,0 +1,100 @@
+﻿@model Time4Time3.Models.ApplicationUser
+@using Time4Time3.Entities
+@using Microsoft.AspNet.Identity
+@using Time4Time3.Logic
+
+@{
+    ViewBag.Title = "Member Profile";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@if (Model == null)
+{
+    Response.Redirect(ViewBag.ReturnUrl);
+}
+
+
+<h2><i class="fa fa-user-circle" aria-hidden="true"></i> @Model.UserName's Profile</h2>
+<hr />
+
+<div class="container-fluid">
+    <row class="row profileRow">
+        <div class="profilePicture col-xs-3">
+            @if (string.IsNullOrWhiteSpace(Model.ImagePath))
+            {<i class="fa fa-5x fa-user img-thumbnail text-center" style="width: 200px; line-height:190px"></i>}
+            else
+            { <img class="img img-responsive img-thumbnail" src=@Href(Model.ImagePath) height="200" width="200" />}
+
+
+        </div>
+        <dl class="dl-horizontal col-xs-7 profile-Info">
+            <dt>
+                Full Name
+            </dt>
+
+            <dd>
+                @Utils.GetFullName(Model)
+            </dd>
+
+            <dt>
+                Location
+            </dt>
+
+            <dd>
+                @Model.City
+            </dd>
+
+            @if (Request.IsAuthenticated)
+            {
+                <dt>
+                    E-mail
+                </dt>
+
+                <dd>
+                    @Model.Email
+                </dd>
+            }
+        </dl>
+    </row>
+
+    
+    <p class="text-center">
+        <a href="@ViewBag.ReturnUrl" role="button" class="btn btn-default">Back</a>
+    </p>
+    <hr />
+
+
+    @if (Model.Services != null)
+    {
+        foreach (Service a in Model.Services)
+        {
+            <div class="searchComponent">
+                <div class="col-sm-10">
+                    <header>
+                        <h3><strong><a href="~/Search/Service?id=@a.Id">@a.Title</a></strong></h3>
+                    </header>
+                    <p>@a.Description</p>
+                    <p><em>Offered for <strong>@a.CreditWorth</strong> Credits </em></p>
+                </div>
+                @if (Request.IsAuthenticated) { 
+                <aside class="col-sm-2 flex-results">
+                    @if (a.SupplierId != User.Identity.GetUserId())
+                    {
+                        @Html.ActionLink("Ask For It", "AskTransaction", "Profile",
+                                 routeValues: new { id = @a.Id },
+                                 htmlAttributes: new { id = "sendlink", @class = "btn btn-default btn-md" })
+
+                        <span><i class="fa fa-map-marker fa-2x"></i> @a.Location</span>
+                    }
+
+                </aside>
+                }
+            </div>
+        }
+    }
+    else
+    {
+        @Html.Partial("_EmptyTabPartial", "No services available")
+    }
+
+</div>

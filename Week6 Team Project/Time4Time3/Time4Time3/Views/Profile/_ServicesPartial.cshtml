@@ -1,0 +1,30 @@
+﻿@using Microsoft.AspNet.Identity;
+@model Time4Time3.Models.ProfileViewModel
+
+<div id="services" class="tab-pane fade in active">
+    @{ foreach (var service in Model.Services)
+        {
+            <div class="row profileService-Component">
+                <div class="col-xs-3 profileService-Image">
+                    <img class="img img-rounded img-responsive" src="#" />
+                </div>
+                <div class="col-xs-7 profileService-Info">
+                    <h3>@service.Title  <span class="label label-success">@service.IsActive</span></h3>
+                    <p>@service.Description</p>
+                    <h5>Credits :<span class="label label-info">@service.CreditWorth.ToString()</span></h5>
+                </div>
+                <div class="col-xs-2 controlsContainer">
+                    <div class="profileService-Controls">
+                        <button class="btn btn-default btn-md">
+                            <a href=@Href("~/Profile/EditService/"+service.Id)><span class="glyphicon glyphicon-edit"></span></a>
+                        </button>
+                        <button class="btn btn-default btn-md">
+                            <a href=@Href("~/Profile/DeleteService/"+service.Id)><span class="glyphicon glyphicon-remove-circle"></span></a>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+
+</div>

@@ -1,0 +1,220 @@
+﻿@model Time4Time3.Entities.Message
+@using Time4Time3.Logic
+@using Time4Time3.Entities
+@using Microsoft.AspNet.Identity
+
+@{
+    ViewBag.Title = "Message";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@section styles{
+    @Styles.Render("~/Content/Messages.css")
+}
+
+@section scripts{
+
+    <script>
+        jQuery(document).ready(function ($) {
+            
+            // Message animation
+            $("#message-action-alert").animate({
+                top: "80px"
+            }, 600, "swing").fadeTo(3000, 500).animate({
+                top: "-200px"
+            }, 400, "swing")
+
+            // Modal Delete Confirmation
+            $('#shred-confirmation').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget)  // Button that triggered the modal
+                var id = button.data('id')           // Extract info from data-id attribute
+                var subject = button.data('subject') // Extract info from data-subject attribute
+                var content = button.data('content') // Extract info from data-content attribute
+                var modal = $(this)
+                modal.find('#modal-subject-placeholder').text(subject)
+                modal.find('#modal-content-placeholder').text(content)
+                modal.find("input[name='id']").val(id)
+            })
+
+
+
+        });
+    </script>
+}
+
+<div class="above-tabs-wrapper">
+    <h2>Message</h2>
+
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Message))
+    {
+        string alertClass = "";
+        if (ViewBag.MessageConnotation > 0) { alertClass = "positive-connotation"; }
+        else if (ViewBag.MessageConnotation < 0) { alertClass = "negative-connotation"; }
+        <div class="alert alert-warning alert-dismissible fade in @alertClass" id="message-action-alert" role=alert>
+            <button type=button class=close data-dismiss=alert aria-label=Close>
+                <span aria-hidden=true>&times;</span>
+            </button>
+            @ViewBag.Message
+        </div>
+    }
+</div>
+
+<ul class="nav nav-tabs mail-tabs">
+
+    <li role="presentation" @if (ViewBag.Mailbox == MailBox.Inbox) { <text> class="active" </text>  }><a href="~/Messages/Inbox" title="Inbox"><i class="fa fa-inbox" aria-hidden="true"></i> Inbox</a></li>
+    <li role="presentation" @if (ViewBag.Mailbox == MailBox.Sent) { <text> class="active" </text>   }><a href="~/Messages/Sent" title="Sent"><i class="fa fa-paper-plane" aria-hidden="true"></i> Sent</a></li>
+    <li role="presentation" @if (ViewBag.Mailbox == MailBox.Trash) { <text> class="active" </text>   }><a href="~/Messages/Trash" title="Trash"><i class="fa fa-trash" aria-hidden="true"></i> Trash</a></li>
+    <li role="separator" class="divider pull-right">
+        <div role="contentinfo"><a href="~/Message/Create" role="button" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> New</a></div>
+    </li>
+    <li role="separator" class="divider">
+
+    </li>
+</ul>
+
+<div class="message-container">
+    @if (Model == null)
+    {
+        <div class="text-center no-msg"><i class="fa fa-ban fa-5x" aria-hidden="true"></i><br />No message found</div>
+    }
+    else
+    {
+
+        <!-- Message Navigation bar-->
+        <div class="message-toolbar" role="toolbar" aria-label="Message Controls">
+
+            @{
+                int CurrentIndex = 0;
+                List<int> messageList = new List<int>();
+            }
+            @if (Session["MessageList"] != null){
+            <div class="btn-group" role="group" aria-label="Navigation">
+                @*Find previous and next messages*@
+                @{ 
+                    messageList = (List<int>) Session["MessageList"];
+                    CurrentIndex = messageList.IndexOf(Model.MessageID);
+
+                    int prevId = -1;
+                    int nextId = -1;
+
+                    if (CurrentIndex > 0) { prevId = messageList[CurrentIndex - 1]; }
+                    else { prevId = messageList[0];}
+
+                    if (CurrentIndex < messageList.Count() - 1) { nextId = messageList[CurrentIndex + 1]; }
+                    else { nextId = messageList[messageList.Count()-1]; }
+                }
+
+                
+                <a href="~/Message/View/@prevId" role="button" class="btn btn-default @if(prevId == Model.MessageID){<text>disabled</text>}" title="Previous"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
+                <a href="~/Message/View/@nextId" role="button" class="btn btn-default @if(nextId == Model.MessageID){<text>disabled</text>}" title="Next"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+            </div>
+            }
+
+            @if (Session["MessageList"] != null) {
+            <div class="btn-group" role="group" aria-label="Counter">
+                <p class="message-counter" title="Counter">@(CurrentIndex + 1)/@messageList.Count()</p>
+            </div>
+            }
+
+            <form class="btn-group" role="group" aria-label="Actions" method="post" action="~/Messages/@ViewBag.MailBox">
+                @if (Model.SenderID != User.Identity.GetUserId())
+                {
+                    <a href="~/Message/Reply/@Model.MessageID" role="button" class="btn btn-default" title="Reply"><i class="fa fa-reply" aria-hidden="true"></i> Reply</a>
+                }
+
+                <a href="~/Message/Forward/@Model.MessageID" role="button" class="btn btn-default" title="Forward"><i class="fa fa-share" aria-hidden="true"></i> Forward</a>
+                <input type="hidden" name="id" value="@Model.MessageID" />
+                @if (ViewBag.MailBox == MailBox.Trash)
+                {
+                    <button type="submit" role="button" class="btn btn-default" title="Restore" name="msgaction" value="Restore"><i class="fa fa-undo" aria-hidden="true"></i> Restore</button>
+                    <a role="button" class="btn btn-default shred-button" data-toggle="modal" data-target="#shred-confirmation"
+                       data-id="@Model.MessageID" data-subject="@Html.Raw(@WebUtility.HtmlDecode(Model.Subject))" data-content="@Html.Raw(@WebUtility.HtmlDecode(Model.Content))">
+                        <i class="fa fa-times-circle" aria-hidden="true" title="Shred"></i> Shred
+                    </a>
+                }
+                else
+                {
+                    <button type="submit" role="button" class="btn btn-default" title="Trash" name="msgaction" value="Trash"><i class="fa fa-trash" aria-hidden="true"></i> Trash</button>
+                }
+            </form>
+        </div>
+        <!-- Message Navigation bar-->
+
+        <div class="msg-view-subject">
+            @if (Model.ReadDate == null)
+            { <i class="fa fa-envelope" aria-hidden="true" title="Unread"></i>}
+            else
+            { <i class="fa fa-envelope-open-o" aria-hidden="true" title="Read"></i> }
+            @Html.Raw(@WebUtility.HtmlDecode(Model.Subject))
+        </div>
+
+        <p class="msg-view-sender-info">
+            <strong>From:</strong><a href="~/Search/MemberProfile?userId=@Model.SenderID&returnUrl=~/Message/View/@Model.MessageID"> @Utils.GetFullName(Model.Sender)</a><br />
+            <strong>To:</strong> <a href="~/Search/MemberProfile?userId=@Model.ReceiverID&returnUrl=~/Message/View/@Model.MessageID">
+    @Utils.GetFullName(Model.Receiver)</a><br />
+            <strong>Date:</strong><time datetime="@Model.SentDate">@Model.SentDate</time><br />
+            <strong>Read report: </strong>
+            @if (@Model.ReadDate == null)
+            {
+                <text>Unread</text>
+            }
+            else
+            {
+                <text>Read at </text><time datetime="@Model.ReadDate">@Model.ReadDate</time>
+            }
+</p>
+        <div class="msg-view-content">
+            @Html.Raw(@WebUtility.HtmlDecode(Model.Content))
+        </div>
+        }
+</div>
+
+
+@if (Model.RelatedTransaction != null)
+{
+    <div class="message-container">
+        <p class="label-info">This message is related to this transaction:</p>
+        <div class="msg-view-subject">
+            @Model.RelatedTransaction.Service.Title
+        </div>
+
+        <p class="msg-view-sender-info">
+            <strong>Provided by:</strong> @Utils.GetFullName(Model.RelatedTransaction.Service.Supplier)<br />
+            <strong>Requested by:</strong> @Utils.GetFullName(Model.RelatedTransaction.Sender)<br />
+            <strong>Date requested:</strong><time datetime="@Model.RelatedTransaction.StartDate">@Model.RelatedTransaction.StartDate</time><br />           
+        </p>
+        <div class="msg-view-content">@Model.RelatedTransaction.Service.Description</div>
+    </div>
+}
+
+
+@if (Model.ParentMessage != null)
+{
+    <div class="message-container">
+        <p class="label-info">This message is a reply to:</p>
+        <div class="msg-view-subject">
+            @Model.ParentMessage.Subject
+        </div>
+
+        <p class="msg-view-sender-info">
+            <strong>From:</strong><a href="~/Search/MemberProfile?userId=@Model.ParentMessage.ReceiverID&returnUrl=~/Message/View/@Model.MessageID"> @Utils.GetFullName(Model.Sender)</a><br />
+            <strong>To:</strong> <a href="~/Search/MemberProfile?userId=@Model.ParentMessage.SenderID&returnUrl=~/Message/View/@Model.MessageID">
+                @Utils.GetFullName(Model.Receiver)
+            </a><br />
+            <strong>Date:</strong><time datetime="@Model.ParentMessage.SentDate">@Model.ParentMessage.SentDate</time><br />
+            <strong>Read report: </strong>
+            @if (@Model.ParentMessage.ReadDate == null)
+            {
+                <text>Unread</text>
+            }
+            else
+            {
+                <text>Read at </text><time datetime="@Model.ParentMessage.ReadDate">@Model.ParentMessage.ReadDate</time>
+            }
+        </p>
+        <div class="msg-view-content">@Model.ParentMessage.Content</div>
+    </div>
+}
+
+
+@Html.Partial("_deleteConfirmationModal")

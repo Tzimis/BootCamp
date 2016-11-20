@@ -1,0 +1,203 @@
+﻿@using Time4Time3.Entities;
+@model IEnumerable<Time4Time3.Models.MessagesViewModel>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+
+@section styles{
+    @Styles.Render("~/Content/Messages.css")
+}
+
+@section scripts{
+    
+    <script>
+        jQuery(document).ready(function ($) {
+            // Clickable rows
+            $(".clickable-cell").click(function () {
+                window.document.location = $(this).data("href");
+            })
+
+            // Modal Delete Confirmation
+            $('#shred-confirmation').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget)  // Button that triggered the modal
+                var id = button.data('id')           // Extract info from data-id attribute
+                var subject = button.data('subject') // Extract info from data-subject attribute
+                var content = button.data('content') // Extract info from data-content attribute
+                var modal = $(this)
+                modal.find('#modal-subject-placeholder').text(subject)
+                modal.find('#modal-content-placeholder').text(content)
+                modal.find("input[name= 'id']").val(id)
+            })
+
+            $("#message-action-alert").animate({
+                top: "80px"
+            }, 600, "swing").fadeTo(3000, 500).animate({
+                top: "-200px"
+            }, 400, "swing")
+
+        });
+    </script>
+}
+
+<div class="above-tabs-wrapper">
+    <h2> Messages</h2>
+    <hr />
+    @if (!string.IsNullOrWhiteSpace(ViewBag.Message) || !string.IsNullOrWhiteSpace((string)TempData["Message"]))
+    {
+        string message;
+        int connotation;
+
+        if (!string.IsNullOrWhiteSpace(ViewBag.Message))
+        {
+            message = ViewBag.Message;
+            connotation = ViewBag.MessageConnotation;
+        }
+        else
+        {
+            message = (string)TempData["Message"];
+            connotation = (int)TempData["MessageConnotation"];
+        }
+
+        string alertClass = "";
+        if (connotation > 0) { alertClass = "positive-connotation"; }
+        else if (connotation < 0) { alertClass = "negative-connotation"; }
+            <div class="alert alert-warning alert-dismissible fade in @alertClass" id="message-action-alert" role=alert> 
+            <button type=button class=close data-dismiss=alert aria-label=Close>
+                <span aria-hidden=true>&times;</span>
+            </button> 
+            @message
+        </div>
+    }
+</div>
+
+<ul class="nav nav-tabs mail-tabs">
+
+    <li role="presentation" @if (ViewBag.Mailbox == MailBox.Inbox) { <text>class="active"</text> }><a href="~/Messages/Inbox" title="Inbox"><i class="fa fa-inbox" aria-hidden="true"></i> Inbox</a></li>
+    <li role="presentation" @if (ViewBag.Mailbox == MailBox.Sent) { <text> class="active" </text>  }><a href="~/Messages/Sent" title="Sent"><i class="fa fa-paper-plane" aria-hidden="true"></i> Sent</a></li>
+    <li role="presentation" @if (ViewBag.Mailbox == MailBox.Trash) { <text> class="active" </text>  }><a href="~/Messages/Trash" title="Trash"><i class="fa fa-trash" aria-hidden="true"></i> Trash</a></li>
+    <li role="separator" class="divider pull-right">
+        <div role="contentinfo"><a href="~/Message/Create" role="button" class="btn btn-primary"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> New</a></div>
+    </li>
+    <li role="separator" class="divider">
+        <span class="msg-nav-info hidden-sm hidden-xs">
+            @ViewBag.UnreadCountInfo
+        </span>
+        <span class="msg-nav-info visible-sm">
+            @if (@ViewBag.MailBox != MailBox.Trash) {
+                <text> Unread: @Model.Count(m => !m.IsRead) / @Model.Count() </text>}
+        </span>
+    </li>
+</ul>
+
+@{
+    // Pagination
+    int page = 1;
+    int messagesPerPage = 10;
+    int totalPages = (int)Math.Ceiling(((double)Model.Count()) / messagesPerPage);
+    if (ViewBag.Page != null && ViewBag.Page <= totalPages && ViewBag.Page > 0)
+    { page = ViewBag.Page; }
+
+    int paginationCounter = 0;
+
+    if (totalPages > 1)
+    {
+        <nav aria-label="Page navigation" class="pagination-container">
+            <div class="pagination btn-group" role="group">
+
+                @{
+                    bool isFirst = (page == 1);
+                    bool isLast = (page == totalPages);
+                    string prevPage = (isFirst) ? page.ToString() : (page - 1).ToString();
+                    string nextPage = (isLast) ? page.ToString() : (page + 1).ToString();
+                }
+                    <a href="~/Messages/@ViewBag.MailBox/@prevPage" aria-label="Previous" role="button"
+                       class="btn btn-default @if (isFirst) {<text>disabled</text>}">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                @for (int p = 1; p <= totalPages; p++)
+                {
+                    <a href="~/Messages/@ViewBag.MailBox/@p"  role="button"
+                           class="btn btn-default @if (p==page) {<text>disabled</text>}">@p</a>
+                }
+
+        
+                    <a href="~/Messages/@ViewBag.MailBox/@nextPage" aria-label="Next" role="button" class="btn btn-default @if (isLast) {<text>disabled</text>}">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+            </div>
+        </nav>
+    }
+}
+
+<table class="msg-table table">
+
+@if (Model == null || Model.Count() == 0)
+{
+    <tr>
+        <td>
+            <div class="text-center no-msg"><i class="fa fa-inbox fa-5x" aria-hidden="true"></i><br/>No messages</div>
+        </td>
+    </tr>
+}
+else
+{
+    foreach (var item in Model)
+    {
+        paginationCounter++;
+        if(paginationCounter > messagesPerPage*(page - 1) && paginationCounter <= messagesPerPage * page)
+        {
+        <tr class="clickable-row msg-row">
+            <td class="clickable-cell" data-href=@Href("~/Message/View/" + item.MessageID)>
+                <div class="msg-lite-person-name">@item.CorrespondentName</div>
+            </td>
+            <td class="clickable-cell" data-href=@Href("~/Message/View/" + item.MessageID)>
+                <div class="msg-lite-subject  @if (!item.IsRead) {<text>msg-unread</text>}">
+                    @if (item.IsRead)
+                    {<i class="fa fa-envelope-open-o" aria-hidden="true" title="Read"></i>}
+                    else
+                    {<i class="fa fa-envelope" aria-hidden="true" title="Unread"></i>}
+                    <a href=@Href("~/Message/View/" + item.MessageID)>@item.Subject</a>
+                </div>
+                <div class="msg-lite-content">
+                    <a href=@Href("~/Message/View/" + item.MessageID)>@item.Content</a>
+                </div>
+            </td>
+            <td class="clickable-cell" data-href=@Href("~/Message/View/" + item.MessageID)>
+                <div class="msg-lite-date text-center">@item.SentDate</div>
+            </td>
+            <td>
+                <form method="post" action="~/Messages/@ViewBag.MailBox" class="msg-row-buttons-container">
+                @if (ViewBag.MailBox == MailBox.Trash)
+                {
+                    <input type="hidden" name="id" value="@item.MessageID" />
+
+                    <button type="submit" name="msgaction" value="Restore" class="fa-msg-lite-button fa-msg-lite-button-positive">
+                        <i class="fa fa-undo" aria-hidden="true" title="Restore"></i>
+                    </button>
+                    <a role="button" class="fa-msg-lite-button shred-button" data-toggle="modal" data-target="#shred-confirmation"
+                        data-id="@item.MessageID" data-subject="@item.Subject" data-content="@item.Content">
+                        <i class="fa fa-times-circle" aria-hidden="true" title="Shred"></i>
+                    </a> 
+                }
+                else
+                {
+                    <input type="hidden" name="id" value="@item.MessageID" />
+
+                    <button type="submit" name="msgaction" value="Trash" class="fa-msg-lite-button">
+                        <i class="fa fa-trash" aria-hidden="true" title="Trash"></i>
+                    </button>
+                }
+                </form>
+            </td>
+        </tr>
+        }
+    }
+
+}
+
+ 
+</table>
+
+@Html.Partial("_deleteConfirmationModal")

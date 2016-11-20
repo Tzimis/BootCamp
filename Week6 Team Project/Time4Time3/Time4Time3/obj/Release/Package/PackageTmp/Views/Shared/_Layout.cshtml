@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T4T / @ViewBag.Title</title>
+    @Styles.Render("~/Content/bootstrap.min.css")
+    @Styles.Render("~/Content/font-awesome.css")
+    @Styles.Render("~/Content/Site.css")
+    @Scripts.Render("~/bundles/modernizr")
+    @RenderSection("styles", required: false)
+
+    <link rel="icon" type="image/png" href="~/Assets/img/T4TLogoBlack.png">
+
+</head>
+<body>
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a href="~/" class="logo-link">
+                    <img src="~/Assets/img/T4TLogo.svg" class="header-logo navbar-brand" />
+                    <span class="navbar-brand header-title">Time4Time</span>
+                </a>
+
+                <span class="navbar-form navbar-left">
+                    @using (Html.BeginForm("Results", "Search", FormMethod.Get))
+                    {
+                        <span class="form-group">
+                            <input type="text" class="form-control" name="searchWord" placeholder="Results">
+                        </span>
+                        <button type="submit" class="btn btn-default">Go!</button>
+                    }
+                </span>
+
+            </div>
+            <div class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+
+                    @if (Request.IsAuthenticated)
+                    {
+                            <li>
+                                @Html.ActionLink("Messages", "Index", "Messages", routeValues: null, htmlAttributes: new { title = "Inbox" })
+                            </li>
+                        }
+                </ul>
+                @Html.Partial("_LoginPartial")
+            </div>
+        </div>
+    </div>
+    <div class="container-fluid body-content">
+        @RenderBody()
+    </div>
+    <footer class="site-footer">
+        <p class="text-center">
+            <a href="~/Home/About#getting-started">Getting Started</a> |
+            @Html.ActionLink("About us", "About", "Home") | 
+            &copy; 2016 - Time4Time, Inc.
+        </p>
+
+    </footer>
+
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/bundles/bootstrap")
+    @RenderSection("scripts", required: false)
+</body>
+
+</html>

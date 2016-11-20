@@ -1,0 +1,101 @@
+﻿@using Microsoft.AspNet.Identity;
+@model Time4Time3.Models.ProfileViewModel
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+<h2><i class="fa fa-user-circle" aria-hidden="true"></i>&nbsp; @User.Identity.GetUserName()'s Profile</h2>
+<hr />
+
+<div class="container-fluid">
+    <row class="row profileRow">
+        <div class="profilePicture col-xs-3">
+            @if (string.IsNullOrWhiteSpace(Model.ImagePath))
+            {<i class="fa fa-5x fa-user img-thumbnail text-center" style="width: 200px; line-height:190px"></i>}
+            else
+            { <img class="img img-responsive img-thumbnail" src=@Href(Model.ImagePath) height="200" width="200" />}
+            
+
+        </div>
+        <dl class="dl-horizontal col-xs-7 profile-Info">
+            <dt>
+                @Html.DisplayNameFor(Model => Model.FullName)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(Model => Model.FullName)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(Model => Model.OwnedCredits)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(Model => Model.OwnedCredits)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(Model => Model.FullAddress)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(Model => Model.FullAddress)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(Model => Model.Status)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(Model => Model.Status)
+            </dd>
+
+            <dt>
+                @Html.DisplayNameFor(Model => Model.Email)
+            </dt>
+
+            <dd>
+                @Html.DisplayFor(Model => Model.Email)
+            </dd>
+        </dl>
+        <div class="col-xs-2 profileEditControl">
+            <a href=@Href("~/Profile/Edit/" + User.Identity.GetUserName()) class="btn btn-default btn-md" role="button"><i class="fa fa-cog fa-2x" title="Edit Profile" aria-hidden="true"></i></a>
+            <a href=@Href("~/Profile/EditService/-1") class="btn btn-default btn-md" role="button"><i class="fa fa-plus-circle fa-2x" title="NewService" aria-hidden="true"></i></a>
+           
+           
+        </div>
+    </row>
+    <div>
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#services">@Html.DisplayNameFor(Model => Model.Services)</a></li>
+            <li><a data-toggle="tab" href="#requests" )>@Html.DisplayNameFor(Model => Model.Requests)</a></li>
+            <li><a data-toggle="tab" href="#todo">@Html.DisplayNameFor(Model => Model.Todo)</a></li>
+            <li><a data-toggle="tab" href="#transactions">@Html.DisplayNameFor(Model => Model.Transactions)</a></li>
+            </ul>
+            <div class="tab-content">
+                @{Html.RenderPartial("_ProfilePartial");}
+            </div>
+        </div>
+</div>
+
+@section scripts{
+
+
+
+    <script type="text/javascript">
+        jQuery(document).ready(function ($) {
+
+            // Modal Delete Confirmation
+            $('#delete-confirmation').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget)  // Button that triggered the modal
+                var id = button.data('id')           // Extract info from data-id attribute
+                var title = button.data('title') // Extract info from data-subject attribute
+                var modal = $(this)
+                modal.find('#modal-title-placeholder').text(title)
+                modal.find("input[name='serviceId']").val(id)
+            })
+        });
+    </script>
+
+}
